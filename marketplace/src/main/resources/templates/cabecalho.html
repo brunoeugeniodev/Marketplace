@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/estilos/style.css}">
+
+    <!-- CSRF tokens para Spring Security -->
+    <meta th:if="${_csrf}" name="_csrf" th:content="${_csrf.token}"/>
+    <meta th:if="${_csrf}" name="_csrf_header" th:content="${_csrf.headerName}"/>
+</head>
+
+<body>
+<header th:fragment="header">
+    <div class="container">
+        <div class="header-top">
+            <!-- LOGO -->
+            <div class="logo">
+                <a th:href="@{/}" aria-label="Ir para página inicial">
+                    <img th:src="@{/imagens/Logo.png}" alt="Logo Na Loja Tem" class="logo-img">
+                </a>
+            </div>
+
+            <!-- BUSCA -->
+            <div class="search-bar">
+                <form th:action="@{/busca}" method="get" class="search-form" role="search">
+                    <input type="text" id="search-input" name="q" placeholder="O que você está procurando?">
+                    <button type="submit" id="search-button" aria-label="Pesquisar">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </form>
+            </div>
+
+            <!-- AÇÕES DO USUÁRIO -->
+            <div class="user-actions" id="user-actions-container">
+                <!-- Carrinho -->
+                <a th:href="@{/carrinho}" class="cart-link" aria-label="Ver carrinho">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="cart-text">Carrinho</span>
+                    <span class="cart-count" id="cart-count">0</span>
+                </a>
+
+                <!-- Estado do Login -->
+                <div class="auth-status" th:if="${usuarioLogado != null}">
+                    <!-- Usuário Logado -->
+                    <div class="user-dropdown">
+                        <button class="user-btn">
+                            <i class="fas fa-user-circle"></i>
+                            <span th:text="${usuarioLogado}"></span>
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <div class="dropdown-menu">
+                            <a th:href="@{/minha-conta}"><i class="fas fa-user"></i> Minha Conta</a>
+                            <a th:href="@{/minha-loja}"><i class="fas fa-store"></i> Minha Loja</a>
+                            <div class="dropdown-divider"></div>
+                            <!-- Botão de logout corrigido -->
+                            <form th:action="@{/logout}" method="post" style="display: inline;" id="logout-form">
+                                <input type="hidden" th:name="${_csrf?.parameterName}" th:value="${_csrf?.token}"/>
+                                <button type="submit" class="logout-btn" style="background: none; border: none; color: inherit; cursor: pointer; padding: 0; font: inherit; width: 100%; text-align: left;">
+                                    <i class="fas fa-sign-out-alt"></i> Sair
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Usuário Não Logado -->
+                <div class="auth-buttons" th:unless="${usuarioLogado != null}">
+                    <a th:href="@{/login}" class="btn-login">Entrar</a>
+                    <a th:href="@{/registro}" class="btn-register">Cadastrar</a>
+                </div>
+            </div>
+
+            <!-- MENU MOBILE -->
+            <button class="mobile-menu-btn" aria-label="Abrir menu móvel">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+
+        <!-- MENU PRINCIPAL -->
+        <nav class="main-nav" aria-label="Menu principal">
+            <div class="container">
+                <ul id="nav-menu">
+                    <li><a th:href="@{/lojas}"><i class="fas fa-store"></i> Lojas</a></li>
+                    <li><a th:href="@{/ofertas}"><i class="fas fa-tag"></i> Ofertas</a></li>
+                    <li><a th:href="@{/lancamentos}"><i class="fas fa-bullhorn"></i> Lançamentos</a></li>
+                    <li><a th:href="@{/destaques}"><i class="fas fa-star"></i> Destaques</a></li>
+                    <li><a th:href="@{/categorias}"><i class="fas fa-th-large"></i> Categorias</a></li>
+                    <li><a th:href="@{/ajuda}"><i class="fas fa-question-circle"></i> Ajuda</a></li>
+                </ul>
+            </div>
+        </nav>
+    </div>
+</header>
+
+<!-- Scripts -->
+<script th:src="@{/js/header.js}" defer></script>
+<script th:src="@{/js/main.js}" defer></script>
+
+<script>
+    // Script inline para garantir que o logout funcione
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('🚀 Header script carregado');
+
+        // Configuração do menu mobile
+        const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+        const navMenu = document.getElementById('nav-menu');
+
+        if (mobileMenuBtn && navMenu) {
+            mobileMenuBtn.addEventListener('click', function() {
+                navMenu.classList.toggle('show');
+                const icon = this.querySelector('i');
+                if (icon) {
+                    icon.classList.toggle('fa-bars');
+                    icon.classList.toggle('fa-times');
+                }
+            });
+        }
+
+        // Adicionar evento de logout
+        const logoutBtn = document.querySelector('.logout-btn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                console.log('🔐 Logout iniciado...');
+                document.getElementById('logout-form').submit();
+            });
+        }
+    });
+</script>
+</body>
+</html>

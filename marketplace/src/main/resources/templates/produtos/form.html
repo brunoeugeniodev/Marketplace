@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${modo == 'cadastro' ? 'Cadastrar Produto' : 'Editar Produto'}">Cadastrar Produto</title>
+    <link rel="stylesheet" th:href="@{/estilos/style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .form-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .form-header {
+            margin-bottom: 30px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .form-full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #28a745;
+            box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.1);
+        }
+
+        textarea.form-control {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+
+        .btn-submit {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-submit:hover {
+            background: #218838;
+        }
+
+        .btn-cancel {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-cancel:hover {
+            background: #5a6268;
+        }
+
+        .error-message {
+            color: #dc3545;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .loja-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border-left: 4px solid #28a745;
+        }
+
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+<header th:replace="~{cabecalho :: header}"></header>
+
+<main class="form-container">
+    <div class="form-header">
+        <h1>
+            <i class="fas" th:classappend="${modo == 'cadastro'} ? 'fa-plus-circle' : 'fa-edit'"></i>
+            <span th:text="${modo == 'cadastro' ? 'Cadastrar Novo Produto' : 'Editar Produto'}"></span>
+        </h1>
+        <p th:if="${loja != null}">
+            Loja: <strong th:text="${loja.nome}"></strong>
+        </p>
+    </div>
+
+    <!-- Mensagens de feedback -->
+    <div th:if="${success != null}" class="alert alert-success">
+        <i class="fas fa-check-circle"></i> <span th:text="${success}"></span>
+    </div>
+    <div th:if="${error != null}" class="alert alert-danger">
+        <i class="fas fa-exclamation-circle"></i> <span th:text="${error}"></span>
+    </div>
+
+    <!-- Informações da Loja -->
+    <div class="loja-info" th:if="${loja != null}">
+        <p><strong>Cadastrando produto para:</strong> <span th:text="${loja.nome}"></span></p>
+        <p style="font-size: 14px; color: #666; margin: 5px 0 0 0;">
+            CNPJ: <span th:text="${loja.cnpj}"></span> |
+            Categoria: <span th:text="${loja.categoria != null} ? ${loja.categoria} : 'Não informada'"></span>
+        </p>
+    </div>
+
+    <!-- Formulário -->
+    <form th:action="${modo == 'cadastro'} ? @{/produtos/novo} : @{/produtos/editar/} + ${produtoId}"
+          method="post"
+          th:object="${produto}">
+
+        <div class="form-grid">
+            <!-- Nome -->
+            <div class="form-group form-full-width">
+                <label for="nome">Nome do Produto *</label>
+                <input type="text" id="nome" th:field="*{nome}" class="form-control"
+                       placeholder="Ex: Camiseta Branca Premium">
+                <div th:if="${#fields.hasErrors('nome')}" class="error-message">
+                    <span th:errors="*{nome}"></span>
+                </div>
+            </div>
+
+            <!-- Preço -->
+            <div class="form-group">
+                <label for="preco">Preço *</label>
+                <input type="number" id="preco" th:field="*{preco}" class="form-control"
+                       step="0.01" min="0.01" placeholder="0,00">
+                <div th:if="${#fields.hasErrors('preco')}" class="error-message">
+                    <span th:errors="*{preco}"></span>
+                </div>
+            </div>
+
+            <!-- Quantidade -->
+            <div class="form-group">
+                <label for="quantidade">Quantidade em Estoque *</label>
+                <input type="number" id="quantidade" th:field="*{quantidade}" class="form-control"
+                       min="0" placeholder="0">
+                <div th:if="${#fields.hasErrors('quantidade')}" class="error-message">
+                    <span th:errors="*{quantidade}"></span>
+                </div>
+            </div>
+
+            <!-- Categoria -->
+            <div class="form-group">
+                <label for="categoria">Categoria</label>
+                <input type="text" id="categoria" th:field="*{categoria}" class="form-control"
+                       placeholder="Ex: Roupas, Eletrônicos">
+            </div>
+
+            <!-- Marca -->
+            <div class="form-group">
+                <label for="marca">Marca</label>
+                <input type="text" id="marca" th:field="*{marca}" class="form-control"
+                       placeholder="Ex: Nike, Samsung">
+            </div>
+
+            <!-- Modelo -->
+            <div class="form-group">
+                <label for="modelo">Modelo</label>
+                <input type="text" id="modelo" th:field="*{modelo}" class="form-control"
+                       placeholder="Ex: Air Max 2023, Galaxy S23">
+            </div>
+
+            <!-- URL da Foto -->
+            <div class="form-group form-full-width">
+                <label for="fotoUrl">URL da Imagem do Produto</label>
+                <input type="url" id="fotoUrl" th:field="*{fotoUrl}" class="form-control"
+                       placeholder="https://exemplo.com/foto-do-produto.jpg">
+                <small style="color: #666; font-size: 12px;">Cole a URL completa de uma imagem do produto</small>
+            </div>
+
+            <!-- Descrição -->
+            <div class="form-group form-full-width">
+                <label for="descricao">Descrição do Produto</label>
+                <textarea id="descricao" th:field="*{descricao}" class="form-control"
+                          placeholder="Descreva o produto detalhadamente..."></textarea>
+                <small style="color: #666; font-size: 12px;">Máximo 1000 caracteres</small>
+            </div>
+
+            <!-- Destaque -->
+            <div class="form-group">
+                <div class="checkbox-group">
+                    <input type="checkbox" id="destaque" th:field="*{destaque}">
+                    <label for="destaque">Produto em Destaque</label>
+                </div>
+                <small style="color: #666; font-size: 12px;">Produtos em destaque aparecem nas páginas principais</small>
+            </div>
+        </div>
+
+        <!-- Ações do Formulário -->
+        <div class="form-actions">
+            <a th:href="@{/produtos/gerenciar}" class="btn-cancel">
+                <i class="fas fa-times"></i> Cancelar
+            </a>
+            <button type="submit" class="btn-submit">
+                <i class="fas" th:classappend="${modo == 'cadastro'} ? 'fa-save' : 'fa-edit'"></i>
+                <span th:text="${modo == 'cadastro' ? 'Cadastrar Produto' : 'Atualizar Produto'}"></span>
+            </button>
+        </div>
+    </form>
+
+    <!-- Dicas -->
+    <div style="margin-top: 30px; padding: 15px; background: #f8f9fa; border-radius: 5px; font-size: 14px;">
+        <h4 style="margin-top: 0; color: #333;"><i class="fas fa-lightbulb"></i> Dicas:</h4>
+        <ul style="margin: 10px 0; padding-left: 20px; color: #666;">
+            <li>Use imagens de boa qualidade para aumentar as vendas</li>
+            <li>Descreva bem o produto para evitar dúvidas dos clientes</li>
+            <li>Atualize regularmente o estoque para evitar vendas indisponíveis</li>
+            <li>Produtos em destaque têm maior visibilidade na plataforma</li>
+        </ul>
+    </div>
+</main>
+
+<footer th:replace="~{rodape :: footer}"></footer>
+
+<script>
+    // Formatação do preço
+    document.getElementById('preco').addEventListener('blur', function(e) {
+        let value = parseFloat(e.target.value);
+        if (!isNaN(value) && value > 0) {
+            e.target.value = value.toFixed(2);
+        }
+    });
+
+    // Contador de caracteres para descrição
+    const descricao = document.getElementById('descricao');
+    if (descricao) {
+        const charCount = document.createElement('div');
+        charCount.style.fontSize = '12px';
+        charCount.style.color = '#666';
+        charCount.style.textAlign = 'right';
+        charCount.style.marginTop = '5px';
+        descricao.parentNode.appendChild(charCount);
+
+        function updateCharCount() {
+            const count = descricao.value.length;
+            charCount.textContent = `${count}/1000 caracteres`;
+            charCount.style.color = count > 1000 ? '#dc3545' : '#666';
+        }
+
+        descricao.addEventListener('input', updateCharCount);
+        updateCharCount(); // Inicial
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Minha Loja | Na Loja Tem</title>
+    <link rel="stylesheet" th:href="@{/estilos/style.css}">
+    <link rel="stylesheet" th:href="@{/estilos/minha-loja.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        console.log('🔍 Iniciando Minha Loja...');
+
+        // Monitora tentativas de recarregamento
+        let reloadAttempts = 0;
+
+        window.addEventListener('beforeunload', function(event) {
+            reloadAttempts++;
+            console.warn(`⚠️ Tentativa de recarregamento #${reloadAttempts}`);
+
+            if (reloadAttempts > 2) {
+                // Bloqueia após 2 tentativas
+                event.preventDefault();
+                event.returnValue = 'Recarregamento bloqueado para evitar loop';
+                console.error('🚨 RECARREGAMENTO BLOQUEADO - Loop detectado');
+            }
+        });
+    </script>
+</head>
+<body>
+
+<header th:replace="~{cabecalho :: header}"></header>
+
+<main class="dashboard-container">
+    <div class="container">
+        <!-- Cabeçalho do Dashboard -->
+        <div class="dashboard-header">
+            <div class="header-left">
+                <h1><i class="fas fa-store"></i> Minha Loja</h1>
+                <p class="subtitle">Gerencie sua loja e seus produtos</p>
+            </div>
+            <div class="header-right">
+                <span th:if="${loja != null}"
+                      class="store-status"
+                      th:class="${loja.ativo} ? 'status-active' : 'status-inactive'">
+                    <i class="fas fa-circle"></i>
+                    <span th:text="${loja.ativo} ? 'Loja Ativa' : 'Loja Inativa'"></span>
+                </span>
+            </div>
+        </div>
+
+        <!-- Verificar se usuário tem loja -->
+        <div th:if="${loja != null}">
+            <!-- Cartões de Estatísticas -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-box"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 th:text="${produtos != null ? produtos.size() : 0}">0</h3>
+                        <p>Produtos Cadastrados</p>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-shopping-cart"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3>0</h3>
+                        <p>Vendas Realizadas</p>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 th:text="${loja.avaliacaoMedia != null ? loja.avaliacaoMedia : '0.0'}">0.0</h3>
+                        <p>Avaliação Média</p>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-eye"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3>0</h3>
+                        <p>Visualizações</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Informações da Loja -->
+            <div class="store-info-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-info-circle"></i> Informações da Loja</h2>
+                    <a th:href="@{/loja/editar}" class="btn-edit">
+                        <i class="fas fa-edit"></i> Editar Loja
+                    </a>
+                </div>
+
+                <div class="store-details">
+                    <div class="store-basic">
+                        <div class="store-logo">
+                            <img th:src="${loja.fotoUrl != null ? loja.fotoUrl : '/imagens/placeholder_loja.png'}"
+                                 th:alt="${loja.nome}"
+                                 onerror="this.src='/imagens/imagem_indisponivel.jpg'; this.onerror=null;">
+                        </div>
+                        <div class="store-main-info">
+                            <h3 th:text="${loja.nome}">Nome da Loja</h3>
+                            <div th:if="${loja.categoria != null}" class="store-category">
+                                <i class="fas fa-tag"></i>
+                                <span th:text="${loja.categoria}">Categoria</span>
+                            </div>
+                            <div class="store-description">
+                                <p th:text="${loja.descricao}">Descrição da loja</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="store-details-grid">
+                        <div class="detail-item">
+                            <div class="detail-label">
+                                <i class="fas fa-id-card"></i> CNPJ:
+                            </div>
+                            <div class="detail-value" th:text="${loja.cnpj}">00.000.000/0001-00</div>
+                        </div>
+
+                        <div class="detail-item">
+                            <div class="detail-label">
+                                <i class="fas fa-envelope"></i> Email:
+                            </div>
+                            <div class="detail-value" th:text="${loja.email}">contato@loja.com</div>
+                        </div>
+
+                        <div class="detail-item">
+                            <div class="detail-label">
+                                <i class="fas fa-phone"></i> Telefone:
+                            </div>
+                            <div class="detail-value" th:text="${loja.telefone != null ? loja.telefone : 'Não informado'}">(11) 99999-9999</div>
+                        </div>
+
+                        <div class="detail-item">
+                            <div class="detail-label">
+                                <i class="fas fa-globe"></i> Site:
+                            </div>
+                            <div class="detail-value">
+                                <span th:if="${loja.site != null}">
+                                    <a th:href="${loja.site}" target="_blank" th:text="${loja.site}">https://loja.com</a>
+                                </span>
+                                <span th:unless="${loja.site != null}">
+                                    Não informado
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="detail-item full-width">
+                            <div class="detail-label">
+                                <i class="fas fa-map-marker-alt"></i> Endereço:
+                            </div>
+                            <div class="detail-value">
+                                <span th:if="${loja.lojaRua != null}">
+                                    <span th:text="${loja.lojaRua}">Rua</span>,
+                                    <span th:text="${loja.lojaNumerao}">123</span>
+                                    <span th:if="${loja.lojaComplemento != null}"
+                                          th:text="' - ' + ${loja.lojaComplemento}"></span>
+                                    <br>
+                                    <span th:text="${loja.lojaBairro}">Bairro</span> -
+                                    <span th:text="${loja.lojaCidade}">Cidade</span>/<span th:text="${loja.lojaEstado}">SP</span>
+                                    <br>
+                                    CEP: <span th:text="${loja.lojaCep}">00000-000</span>
+                                </span>
+                                <span th:unless="${loja.lojaRua != null}">
+                                    Endereço não informado
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="detail-item">
+                            <div class="detail-label">
+                                <i class="fas fa-calendar-alt"></i> Cadastrada em:
+                            </div>
+                            <div class="detail-value"
+                                 th:text="${loja.dataCriacao != null ? #temporals.format(loja.dataCriacao, 'dd/MM/yyyy') : 'Data não informada'}">
+                                01/01/2023
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Seção de Produtos - NOVA SEÇÃO ADICIONADA -->
+            <div class="section" style="margin-top: 30px;">
+                <h3><i class="fas fa-box-open"></i> Produtos da Loja</h3>
+
+                <div th:if="${loja != null}">
+                    <p>Total de produtos: <strong th:text="${produtos != null ? produtos.size() : 0}"></strong></p>
+
+                    <div th:if="${produtos != null and !produtos.isEmpty()}">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px; margin-top: 20px;">
+                            <div th:each="produto : ${produtos}" style="background: white; border-radius: 5px; padding: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                                <h4 style="margin: 0 0 10px 0; font-size: 16px;" th:text="${produto.nome}"></h4>
+                                <p style="color: #28a745; font-weight: bold; margin: 0 0 5px 0;"
+                                   th:text="'R$ ' + ${#numbers.formatDecimal(produto.preco, 1, 2, 'POINT')}"></p>
+                                <p style="font-size: 12px; color: #666; margin: 5px 0;">
+                                    Estoque: <strong th:text="${produto.quantidade}"></strong> |
+                                    <span th:if="${produto.ativo}" style="color: green;">Ativo</span>
+                                    <span th:unless="${produto.ativo}" style="color: red;">Inativo</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div th:if="${produtos == null or produtos.isEmpty()}" style="text-align: center; padding: 20px; background: #f8f9fa; border-radius: 5px;">
+                        <i class="fas fa-box-open fa-2x" style="color: #ddd;"></i>
+                        <p style="margin: 10px 0;">Nenhum produto cadastrado ainda</p>
+                    </div>
+
+                    <div style="margin-top: 20px;">
+                        <a th:href="@{'/produtos/gerenciar?lojaId=' + ${loja.id}}" class="btn btn-primary">
+                            <i class="fas fa-cog"></i> Gerenciar Produtos
+                        </a>
+                        <a th:href="@{'/produtos/novo?lojaId=' + ${loja.id}}" class="btn btn-success">
+                            <i class="fas fa-plus"></i> Adicionar Produto
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <!-- FIM DA NOVA SEÇÃO -->
+
+            <!-- Ações Rápidas -->
+            <div class="quick-actions">
+                <h2><i class="fas fa-bolt"></i> Ações Rápidas</h2>
+                <div class="actions-grid">
+                    <a th:href="@{'/produtos/novo?lojaId=' + ${loja.id}}" class="action-card">
+                        <div class="action-icon">
+                            <i class="fas fa-plus-circle"></i>
+                        </div>
+                        <h4>Adicionar Produto</h4>
+                        <p>Cadastre novos produtos para vender</p>
+                    </a>
+
+                    <a th:href="@{/loja/editar}" class="action-card">
+                        <div class="action-icon">
+                            <i class="fas fa-store-alt"></i>
+                        </div>
+                        <h4>Editar Loja</h4>
+                        <p>Atualize as informações da sua loja</p>
+                    </a>
+
+                    <a th:href="@{/pedidos}" class="action-card">
+                        <div class="action-icon">
+                            <i class="fas fa-clipboard-list"></i>
+                        </div>
+                        <h4>Ver Pedidos</h4>
+                        <p>Confira seus pedidos recentes</p>
+                    </a>
+
+                    <a th:href="@{/relatorios}" class="action-card">
+                        <div class="action-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <h4>Relatórios</h4>
+                        <p>Acesse relatórios de vendas</p>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Se usuário não tem loja -->
+        <div th:unless="${loja != null}">
+            <div class="no-store-section">
+                <div class="no-store-content">
+                    <div class="no-store-icon">
+                        <i class="fas fa-store-slash fa-4x"></i>
+                    </div>
+                    <h2>Você ainda não tem uma loja cadastrada</h2>
+                    <p>Para começar a vender seus produtos, crie sua loja agora mesmo.</p>
+                    <p class="benefits">Com sua loja você poderá:</p>
+                    <ul class="benefits-list">
+                        <li><i class="fas fa-check-circle"></i> Cadastrar e vender produtos</li>
+                        <li><i class="fas fa-check-circle"></i> Atingir milhares de clientes</li>
+                        <li><i class="fas fa-check-circle"></i> Gerenciar pedidos e vendas</li>
+                        <li><i class="fas fa-check-circle"></i> Receber avaliações dos clientes</li>
+                        <li><i class="fas fa-check-circle"></i> Participar de promoções</li>
+                    </ul>
+
+                    <div class="cta-buttons">
+                        <a th:href="@{/cadastro-loja}" class="btn-primary btn-lg">
+                            <i class="fas fa-store"></i> Criar Minha Loja
+                        </a>
+                        <a th:href="@{/lojas}" class="btn-secondary btn-lg">
+                            <i class="fas fa-eye"></i> Ver Lojas Existentes
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{rodape :: footer}"></footer>
+
+<script>
+    (function() {
+        'use strict';
+
+        console.log('✅ JavaScript seguro carregado');
+
+        // Espera DOM carregar
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
+
+        function init() {
+            console.log('✅ DOM pronto - inicializando');
+
+            // 1. Botões deletar produto
+            setupDeleteButtons();
+
+            // 2. Sistema de notificações
+            setupNotifications();
+
+            // 3. Links externos
+            setupExternalLinks();
+
+            console.log('✅ Inicialização completa');
+        }
+
+        function setupDeleteButtons() {
+            const buttons = document.querySelectorAll('.btn-delete-product');
+            buttons.forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+
+                    const productCard = this.closest('.product-card');
+                    if (productCard) {
+                        productCard.style.transition = 'opacity 0.3s';
+                        productCard.style.opacity = '0.5';
+
+                        setTimeout(() => {
+                            productCard.remove();
+                            showNotification('Produto removido!', 'success');
+                        }, 300);
+                    }
+                });
+            });
+        }
+
+        function setupNotifications() {
+            window.showNotification = function(message, type = 'info') {
+                const notification = document.createElement('div');
+                notification.className = 'notification-' + type;
+                notification.innerHTML = `
+                    <span>${message}</span>
+                    <button onclick="this.parentElement.remove()">×</button>
+                `;
+
+                // Estilos inline
+                notification.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    padding: 12px 20px;
+                    border-radius: 6px;
+                    color: white;
+                    background: ${type === 'success' ? '#4CAF50' :
+                                 type === 'error' ? '#f44336' : '#2196F3'};
+                    z-index: 9999;
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                    animation: slideIn 0.3s ease;
+                    max-width: 400px;
+                `;
+
+                document.body.appendChild(notification);
+
+                // Remove após 4 segundos
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.remove();
+                    }
+                }, 4000);
+            };
+
+            // Adiciona animação CSS
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes slideIn {
+                    from { transform: translateX(100%); opacity: 0; }
+                    to { transform: translateX(0); opacity: 1; }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+
+        function setupExternalLinks() {
+            document.querySelectorAll('a[href^="http"]').forEach(link => {
+                if (!link.href.includes(window.location.hostname)) {
+                    link.target = '_blank';
+                    link.rel = 'noopener noreferrer';
+                }
+            });
+        }
+
+        // Função global deleteProduct
+        window.deleteProduct = function(productId) {
+            console.log('Deletando produto:', productId);
+            const button = document.querySelector(`[onclick*="${productId}"]`);
+            if (button) button.click();
+        };
+
+    })();
+</script>
+
+<script>
+    window.addEventListener('load', function() {
+        console.log('📊 Página completamente carregada');
+        console.log('📍 URL:', window.location.href);
+
+        // Verifica se há scripts problemáticos
+        const scripts = document.querySelectorAll('script');
+        console.log(`📝 Total de scripts: ${scripts.length}`);
+
+        // Verifica setIntervals ativos (se existirem)
+        if (window._intervalCount) {
+            console.warn(`⚠️ ${window._intervalCount} setInterval(s) ativos`);
+        }
+    });
+</script>
+
+</body>
+</html>

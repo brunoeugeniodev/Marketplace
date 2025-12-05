@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${loja.nome} + ' | Na Loja Tem'">Loja | Na Loja Tem</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" th:href="@{/estilos/style.css}">
+    <link rel="stylesheet" th:href="@{/estilos/loja-individual.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+<!-- Cabeçalho -->
+<header th:replace="~{cabecalho :: header}"></header>
+
+<main class="container loja-individual-page">
+
+    <!-- Cabeçalho da Loja -->
+    <div class="loja-header-section">
+        <div class="loja-banner">
+            <img th:src="${loja.fotoUrl != null and loja.fotoUrl != '' ? loja.fotoUrl : '/imagens/placeholder_loja.png'}"
+                 th:alt="${loja.nome}"
+                 class="loja-image"
+                 onerror="this.src='/imagens/placeholder_loja.png'">
+        </div>
+
+        <div class="loja-info-basic">
+            <div class="loja-title-section">
+                <h1 th:text="${loja.nome}">Nome da Loja</h1>
+                <div class="loja-rating">
+                    <div class="stars">
+                        <i class="fas fa-star" th:each="i : ${#numbers.sequence(1, 5)}"
+                           th:class="${i <= loja.avaliacaoMedia ? 'filled' : ''}"></i>
+                    </div>
+                    <span class="rating-text"
+                          th:text="'⭐ ' + ${loja.avaliacaoMedia} + ' (' + ${loja.totalAvaliacoes} + ' avaliações)'">
+                        ⭐ 4.5 (120 avaliações)
+                    </span>
+                </div>
+
+                <p class="loja-location">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span th:text="${loja.lojaCidade != null ? loja.lojaCidade + ', ' + loja.lojaEstado : 'Localização não informada'}">
+                        São Paulo, SP
+                    </span>
+                </p>
+
+                <p class="loja-description" th:text="${loja.descricao}">
+                    Descrição da loja aqui...
+                </p>
+            </div>
+
+            <div class="loja-actions">
+                <button class="btn btn-primary btn-follow">
+                    <i class="far fa-heart"></i> Seguir Loja
+                </button>
+                <button class="btn btn-outline btn-contact">
+                    <i class="fas fa-envelope"></i> Contatar Loja
+                </button>
+                <a th:href="@{/minha-loja}" th:if="${usuarioLogado != null and loja.usuario.email == usuarioLogado}"
+                   class="btn btn-secondary">
+                    <i class="fas fa-cog"></i> Gerenciar Loja
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navegação da Loja -->
+    <nav class="store-nav">
+        <ul>
+            <li><a href="#produtos" class="active">Produtos</a></li>
+            <li><a href="#sobre">Sobre a Loja</a></li>
+            <li><a href="#avaliacoes">Avaliações</a></li>
+            <li><a href="#contato">Contato</a></li>
+        </ul>
+    </nav>
+
+    <!-- Seção de Produtos -->
+    <section id="produtos" class="store-section">
+        <div class="section-header">
+            <h2>Produtos da Loja</h2>
+            <div class="sorting">
+                <label for="sort-products">Ordenar por:</label>
+                <select id="sort-products">
+                    <option value="recentes">Mais Recentes</option>
+                    <option value="preco-crescente">Menor Preço</option>
+                    <option value="preco-decrescente">Maior Preço</option>
+                    <option value="avaliacao">Melhor Avaliação</option>
+                </select>
+            </div>
+        </div>
+
+        <div th:if="${not #lists.isEmpty(produtos)}" class="products-grid">
+            <div class="product-card" th:each="produto : ${produtos}">
+                <a th:href="@{/produto/{id}(id=${produto.id})}" class="product-link">
+                    <div class="product-image">
+                        <img th:src="${produto.fotoUrl != null ? produto.fotoUrl : '/imagens/placeholder_produto.png'}"
+                             th:alt="${produto.nome}"
+                             onerror="this.src='/imagens/placeholder_produto.png'">
+                    </div>
+                    <div class="product-info">
+                        <h3 th:text="${produto.nome}">Nome do Produto</h3>
+                        <p class="product-description" th:text="${#strings.abbreviate(produto.descricao, 80)}">
+                            Descrição curta do produto...
+                        </p>
+                        <div class="product-price" th:text="${'R$ ' + #numbers.formatDecimal(produto.preco, 1, 2)}">
+                            R$ 99,90
+                        </div>
+                        <div class="product-rating">
+                            <i class="fas fa-star"></i>
+                            <span th:text="${produto.avaliacaoMedia != null ? produto.avaliacaoMedia : 'Novo'}">
+                                4.5
+                            </span>
+                        </div>
+                    </div>
+                </a>
+                <button class="btn-add-cart" th:data-produto-id="${produto.id}">
+                    <i class="fas fa-cart-plus"></i> Adicionar ao Carrinho
+                </button>
+            </div>
+        </div>
+
+        <div th:if="${#lists.isEmpty(produtos)}" class="empty-products">
+            <i class="fas fa-box-open fa-3x"></i>
+            <h3>Esta loja ainda não tem produtos cadastrados</h3>
+            <p>Volte em breve para conferir novidades!</p>
+        </div>
+    </section>
+
+    <!-- Seção Sobre a Loja -->
+    <section id="sobre" class="store-section">
+        <h2>Sobre a Loja</h2>
+        <div class="about-content">
+            <div class="about-details">
+                <div class="detail-item">
+                    <i class="fas fa-calendar-alt"></i>
+                    <div>
+                        <h4>Desde</h4>
+                        <p th:text="${loja.dataCadastro != null ? #temporals.format(loja.dataCadastro, 'dd/MM/yyyy') : 'Data não informada'}">
+                            2023
+                        </p>
+                    </div>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-shopping-bag"></i>
+                    <div>
+                        <h4>Produtos Vendidos</h4>
+                        <p th:text="${produtos != null ? produtos.size() : '0'}">150+</p>
+                    </div>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-users"></i>
+                    <div>
+                        <h4>Seguidores</h4>
+                        <p th:text="${loja.seguidores != null ? loja.seguidores : '0'}">500+</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="about-description">
+                <h3>Nossa História</h3>
+                <p th:text="${loja.descricaoDetalhada != null ? loja.descricaoDetalhada : 'Esta loja ainda não adicionou uma descrição detalhada.'}">
+                    Descrição detalhada da loja, história, missão, valores, etc.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Seção de Contato -->
+    <section id="contato" class="store-section">
+        <h2>Informações de Contato</h2>
+        <div class="contact-info">
+            <div class="contact-item">
+                <i class="fas fa-envelope"></i>
+                <div>
+                    <h4>Email</h4>
+                    <a th:href="'mailto:' + ${loja.email}" th:text="${loja.email}">
+                        contato@loja.com
+                    </a>
+                </div>
+            </div>
+
+            <div class="contact-item">
+                <i class="fas fa-phone"></i>
+                <div>
+                    <h4>Telefone</h4>
+                    <a th:href="'tel:' + ${#strings.replace(loja.telefone, ' ', '')}"
+                       th:text="${loja.telefone}">
+                        (11) 99999-9999
+                    </a>
+                </div>
+            </div>
+
+            <div th:if="${loja.site != null}" class="contact-item">
+                <i class="fas fa-globe"></i>
+                <div>
+                    <h4>Site</h4>
+                    <a th:href="${loja.site}" target="_blank" th:text="${loja.site}">
+                        https://loja.com
+                    </a>
+                </div>
+            </div>
+
+            <div th:if="${loja.lojaRua != null}" class="contact-item">
+                <i class="fas fa-map-marker-alt"></i>
+                <div>
+                    <h4>Endereço</h4>
+                    <p>
+                        <span th:text="${loja.lojaRua}">Rua Exemplo</span>,
+                        <span th:text="${loja.lojaNumerao}">123</span>
+                        <span th:if="${loja.lojaComplemento != null}"
+                              th:text="' - ' + ${loja.lojaComplemento}"></span>
+                        <br>
+                        <span th:text="${loja.lojaBairro}">Bairro</span> -
+                        <span th:text="${loja.lojaCidade}">Cidade</span>,
+                        <span th:text="${loja.lojaEstado}">UF</span>
+                        <br>
+                        CEP: <span th:text="${loja.lojaCep}">00000-000</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Seção de Avaliações (opcional - pode ser implementada depois) -->
+    <section id="avaliacoes" class="store-section" th:if="${false}">
+        <h2>Avaliações dos Clientes</h2>
+        <div class="reviews-container">
+            <p>As avaliações serão implementadas em breve!</p>
+        </div>
+    </section>
+
+</main>
+
+<!-- Rodapé -->
+<footer th:replace="~{rodape :: footer}"></footer>
+
+<!-- Scripts -->
+<script th:src="@{/scripts/main.js}"></script>
+<script th:src="@{/scripts/loja-individual.js}"></script>
+
+</body>
+</html>

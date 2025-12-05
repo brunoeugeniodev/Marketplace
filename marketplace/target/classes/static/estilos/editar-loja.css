@@ -1,0 +1,215 @@
+/* estilos/editar-loja.css */
+
+.editar-header {
+    background: linear-gradient(135deg, #4CAF50, #2E7D32);
+}
+
+.current-info-card {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    margin-bottom: 30px;
+    overflow: hidden;
+    border: 1px solid #e0e0e0;
+}
+
+.card-header {
+    background: #f8f9fa;
+    padding: 20px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.card-header h3 {
+    margin: 0;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.card-body {
+    padding: 20px;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 15px;
+}
+
+.info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.info-label {
+    font-weight: 600;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.info-value {
+    color: #333;
+    font-size: 1rem;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.status-active {
+    background: #d4edda;
+    color: #155724;
+}
+
+.status-inactive {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.form-section {
+    background: white;
+    border-radius: 10px;
+    padding: 25px;
+    margin-bottom: 25px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    border: 1px solid #eee;
+}
+
+.form-section h3 {
+    color: #333;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #f0f0f0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.readonly-field {
+    background: #f8f9fa;
+    border-color: #ddd;
+    color: #666;
+    cursor: not-allowed;
+}
+
+.current-logo {
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.current-logo-img {
+    max-width: 200px;
+    max-height: 200px;
+    border-radius: 10px;
+    border: 2px solid #eee;
+    padding: 5px;
+    background: white;
+}
+
+.file-upload-area {
+    border: 2px dashed #ddd;
+    border-radius: 10px;
+    padding: 30px;
+    text-align: center;
+    position: relative;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.file-upload-area:hover {
+    border-color: #4CAF50;
+    background: rgba(76, 175, 80, 0.05);
+}
+
+.upload-zone i {
+    font-size: 2.5rem;
+    color: #4CAF50;
+    margin-bottom: 10px;
+    opacity: 0.7;
+}
+
+.upload-zone p {
+    margin: 10px 0;
+    color: #333;
+    font-weight: 500;
+}
+
+.upload-zone small {
+    color: #666;
+}
+
+.preview-nova-imagem {
+    max-width: 200px;
+    max-height: 200px;
+    border-radius: 10px;
+    margin-top: 15px;
+    display: none;
+    border: 2px solid #4CAF50;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: space-between;
+    padding: 25px 0;
+    margin-top: 20px;
+    border-top: 1px solid #eee;
+}
+
+.btn {
+    padding: 12px 30px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border: none;
+    font-size: 1rem;
+}
+
+.btn-secondary {
+    background: #6c757d;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background: #5a6268;
+    transform: translateY(-2px);
+}
+
+.btn-primary {
+    background: #4CAF50;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #388E3C;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .info-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .form-actions {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .btn {
+        width: 100%;
+        justify-content: center;
+    }
+}

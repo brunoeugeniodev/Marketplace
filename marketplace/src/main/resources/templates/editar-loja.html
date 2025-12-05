@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${tituloPagina}">Editar Loja | Na Loja Tem</title>
+    <link rel="stylesheet" th:href="@{/estilos/style.css}">
+    <link rel="stylesheet" th:href="@{/estilos/editar-loja.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- PROTETOR CONTRA LOOP DE IMAGEM -->
+    <script>
+        console.log('🛡️ Editar Loja - Carregando...');
+
+        // Previne loops de imagem
+        window.addEventListener('error', function(e) {
+            if (e.target.tagName === 'IMG') {
+                console.warn('⚠️ Erro ao carregar imagem:', e.target.src);
+                e.preventDefault();
+
+                // Substitui por SVG se der erro
+                if (e.target.src.includes('placeholder_loja.png') ||
+                    e.target.src.includes('placeholder_produto.png')) {
+                    const svgPlaceholder = `<svg width="150" height="150" viewBox="0 0 150 150" fill="none">
+                        <rect width="150" height="150" fill="#F5F5F5"/>
+                        <path d="M75 50C68.5 50 63.25 55.25 63.25 61.75C63.25 68.25 68.5 73.5 75 73.5C81.5 73.5 86.75 68.25 86.75 61.75C86.75 55.25 81.5 50 75 50ZM50 125C50 112.5 62.5 100 75 100C87.5 100 100 112.5 100 125H50Z" fill="#CCCCCC"/>
+                        <text x="75" y="85" text-anchor="middle" font-family="Arial" font-size="12" fill="#888">Logo</text>
+                    </svg>`;
+
+                    const div = document.createElement('div');
+                    div.innerHTML = svgPlaceholder;
+                    div.style.width = '150px';
+                    div.style.height = '150px';
+                    div.style.display = 'flex';
+                    div.style.alignItems = 'center';
+                    div.style.justifyContent = 'center';
+
+                    e.target.parentNode.replaceChild(div, e.target);
+                }
+            }
+        }, true);
+    </script>
+</head>
+<body>
+
+<header th:replace="~{cabecalho :: header}"></header>
+
+<main>
+    <section class="page-header editar-header">
+        <div class="container">
+            <h1><i class="fas fa-edit"></i> Editar Minha Loja</h1>
+            <p>Atualize as informações da sua loja para mantê-la sempre atualizada</p>
+        </div>
+    </section>
+
+    <div class="container">
+        <!-- Informações atuais da loja -->
+        <div class="current-info-card">
+            <div class="card-header">
+                <h3><i class="fas fa-store"></i> Informações Atuais</h3>
+            </div>
+            <div class="card-body">
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span class="info-label">Nome:</span>
+                        <span class="info-value" th:text="${loja.nome}"></span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">CNPJ:</span>
+                        <span class="info-value" th:text="${loja.cnpj}"></span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Categoria:</span>
+                        <span class="info-value" th:text="${loja.categoria}"></span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Status:</span>
+                        <span class="info-value status-badge"
+                              th:class="${loja.ativo} ? 'status-active' : 'status-inactive'"
+                              th:text="${loja.ativo} ? 'Ativa' : 'Inativa'">
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Formulário de edição -->
+        <form id="editar-loja-form" class="form-container" th:action="@{/api/minha-loja}" method="post" novalidate>
+            <input type="hidden" name="_method" value="PUT">
+            <input type="hidden" name="lojaId" th:value="${loja.id}">
+
+            <div class="form-section">
+                <h3><i class="fas fa-info-circle"></i> Informações Básicas</h3>
+
+                <div class="form-group">
+                    <label for="nome"><i class="fas fa-sign"></i> Nome da Loja:</label>
+                    <input type="text" id="nome" name="nome" th:value="${loja.nome}"
+                           placeholder="Nome da sua loja" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="cnpj"><i class="fas fa-id-card"></i> CNPJ:</label>
+                    <input type="text" id="cnpj" name="cnpj" th:value="${loja.cnpj}"
+                           placeholder="00.000.000/0000-00" required readonly
+                           class="readonly-field">
+                    <small class="form-text">CNPJ não pode ser alterado após o cadastro.</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="categoria"><i class="fas fa-tags"></i> Categoria:</label>
+                    <select id="categoria" name="categoria" required>
+                        <option value="">Selecione uma categoria</option>
+                        <option value="papelaria" th:selected="${loja.categoria == 'papelaria'}">Papelaria</option>
+                        <option value="esportes" th:selected="${loja.categoria == 'esportes'}">Esportes</option>
+                        <option value="livros" th:selected="${loja.categoria == 'livros'}">Livros</option>
+                        <option value="games" th:selected="${loja.categoria == 'games'}">Games</option>
+                        <option value="roupas" th:selected="${loja.categoria == 'roupas'}">Roupas</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="descricao"><i class="fas fa-align-left"></i> Descrição:</label>
+                    <textarea id="descricao" name="descricao"
+                              placeholder="Descreva sua loja..."
+                              th:text="${loja.descricao}" required></textarea>
+                    <div class="char-counter"><span id="descricao-chars" th:text="${#strings.length(loja.descricao)}">0</span>/500</div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h3><i class="fas fa-map-marker-alt"></i> Endereço</h3>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="cep">CEP:</label>
+                        <input type="text" id="cep" name="lojaCep" th:value="${loja.lojaCep}"
+                               placeholder="00000-000">
+                    </div>
+                    <div class="form-group">
+                        <button type="button" id="btn-buscar-cep" class="btn-small">
+                            <i class="fas fa-search"></i> Buscar CEP
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="logradouro">Logradouro:</label>
+                    <input type="text" id="logradouro" name="lojaRua" th:value="${loja.lojaRua}"
+                           placeholder="Rua, Avenida, etc.">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="numero">Número:</label>
+                        <input type="text" id="numero" name="lojaNumerao" th:value="${loja.lojaNumerao}"
+                               placeholder="Número">
+                    </div>
+                    <div class="form-group">
+                        <label for="complemento">Complemento:</label>
+                        <input type="text" id="complemento" name="lojaComplemento"
+                               th:value="${loja.lojaComplemento}" placeholder="Apto, Sala, etc.">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="bairro">Bairro:</label>
+                        <input type="text" id="bairro" name="lojaBairro" th:value="${loja.lojaBairro}"
+                               placeholder="Nome do bairro">
+                    </div>
+                    <div class="form-group">
+                        <label for="cidade">Cidade:</label>
+                        <input type="text" id="cidade" name="lojaCidade" th:value="${loja.lojaCidade}"
+                               placeholder="Nome da cidade">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="estado">Estado:</label>
+                    <select id="estado" name="lojaEstado">
+                        <option value="">Selecione</option>
+                        <!-- Estados aqui (mesmo do cadastro) -->
+                        <option value="SP" th:selected="${loja.lojaEstado == 'SP'}">São Paulo</option>
+                        <!-- ... outros estados ... -->
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h3><i class="fas fa-image"></i> Logo da Loja</h3>
+
+                <div class="current-logo">
+                    <h4>Logo atual:</h4>
+                    <!-- IMAGEM CORRIGIDA: -->
+                    <div th:if="${loja.fotoUrl != null}">
+                        <img th:src="${loja.fotoUrl}"
+                             alt="Logo atual" class="current-logo-img"
+                             onerror="this.style.display='none'; document.getElementById('placeholder-logo').style.display='block';">
+                    </div>
+                    <div id="placeholder-logo" th:unless="${loja.fotoUrl != null}"
+                         style="width: 150px; height: 150px; background: #f5f5f5; border-radius: 10px;
+                                display: flex; align-items: center; justify-content: center; color: #666;">
+                        <i class="fas fa-store fa-3x"></i>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="nova-foto">Alterar Logo:</label>
+                    <div class="file-upload-area">
+                        <input type="file" id="nova-foto" name="foto" accept="image/*">
+                        <div class="upload-zone">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <p>Clique para fazer upload de uma nova imagem</p>
+                            <small>Formatos: JPG, PNG. Tamanho máximo: 5MB</small>
+                        </div>
+                        <img class="preview-nova-imagem" alt="Prévia da nova imagem">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h3><i class="fas fa-address-card"></i> Contato</h3>
+
+                <div class="form-group">
+                    <label for="telefone"><i class="fas fa-phone"></i> Telefone:</label>
+                    <input type="tel" id="telefone" name="telefone" th:value="${loja.telefone}"
+                           placeholder="(11) 99999-9999">
+                </div>
+
+                <div class="form-group">
+                    <label for="email"><i class="fas fa-envelope"></i> Email:</label>
+                    <input type="email" id="email" name="email" th:value="${loja.email}"
+                           placeholder="contato@loja.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="site"><i class="fas fa-globe"></i> Site:</label>
+                    <input type="url" id="site" name="site" th:value="${loja.site}"
+                           placeholder="https://seusite.com">
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <a th:href="@{/minha-loja}" class="btn btn-secondary">
+                    <i class="fas fa-times"></i> Cancelar
+                </a>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Salvar Alterações
+                </button>
+            </div>
+        </form>
+    </div>
+</main>
+
+<footer th:replace="~{rodape :: footer}"></footer>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('✅ Editar loja - DOM carregado');
+
+        // 1. CORREÇÃO DO BUG PRINCIPAL - Remove onerror problemático
+        document.querySelectorAll('img').forEach(img => {
+            // Remove qualquer onerror que cause loop
+            if (img.onerror && img.src.includes('placeholder')) {
+                img.onerror = null;
+            }
+        });
+
+        // 2. Máscaras
+        const cnpjInput = document.getElementById('cnpj');
+        if (cnpjInput) {
+            cnpjInput.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\D/g, '');
+                if (value.length > 14) value = value.substring(0, 14);
+
+                if (value.length > 12) {
+                    value = value.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{0,2})/, '$1.$2.$3/$4-$5');
+                } else if (value.length > 8) {
+                    value = value.replace(/(\d{2})(\d{3})(\d{3})(\d{0,4})/, '$1.$2.$3/$4');
+                } else if (value.length > 5) {
+                    value = value.replace(/(\d{2})(\d{3})(\d{0,3})/, '$1.$2.$3');
+                } else if (value.length > 2) {
+                    value = value.replace(/(\d{2})(\d{0,3})/, '$1.$2');
+                }
+
+                e.target.value = value;
+            });
+        }
+
+        // 3. Contador de caracteres
+        const descricao = document.getElementById('descricao');
+        const counter = document.getElementById('descricao-chars');
+
+        if (descricao && counter) {
+            descricao.addEventListener('input', function() {
+                counter.textContent = this.value.length;
+            });
+        }
+
+        // 4. Upload de imagem (SEM loop)
+        const fileInput = document.getElementById('nova-foto');
+        const preview = document.querySelector('.preview-nova-imagem');
+        const uploadZone = document.querySelector('.upload-zone');
+
+        if (fileInput && uploadZone) {
+            uploadZone.addEventListener('click', () => fileInput.click());
+
+            fileInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                if (!file.type.match('image.*')) {
+                    alert('Por favor, selecione uma imagem.');
+                    return;
+                }
+
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('A imagem deve ter menos de 5MB.');
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    if (preview) {
+                        preview.src = event.target.result;
+                        preview.style.display = 'block';
+                        // Remove onerror para prevenir loop
+                        preview.onerror = null;
+                    }
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // 5. Envio do formulário (ATUALIZADO)
+        const form = document.getElementById('editar-loja-form');
+        if (form) {
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+
+                const submitBtn = form.querySelector('button[type="submit"]');
+                const originalText = submitBtn.innerHTML;
+
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Salvando...';
+                submitBtn.disabled = true;
+
+                try {
+                    // Criar FormData
+                    const formData = new FormData();
+
+                    // Adicionar campos básicos
+                    formData.append('nome', document.getElementById('nome').value);
+                    formData.append('cnpj', document.getElementById('cnpj').value.replace(/\D/g, ''));
+                    formData.append('descricao', document.getElementById('descricao').value);
+                    formData.append('categoria', document.getElementById('categoria').value);
+                    formData.append('telefone', document.getElementById('telefone').value);
+                    formData.append('email', document.getElementById('email').value);
+                    formData.append('site', document.getElementById('site').value);
+
+                    // Endereço
+                    formData.append('lojaCep', document.getElementById('cep').value);
+                    formData.append('lojaRua', document.getElementById('logradouro').value);
+                    formData.append('lojaNumerao', document.getElementById('numero').value);
+                    formData.append('lojaComplemento', document.getElementById('complemento').value);
+                    formData.append('lojaBairro', document.getElementById('bairro').value);
+                    formData.append('lojaCidade', document.getElementById('cidade').value);
+                    formData.append('lojaEstado', document.getElementById('estado').value);
+
+                    // Arquivo de imagem, se houver
+                    const fotoInput = document.getElementById('nova-foto');
+                    if (fotoInput && fotoInput.files[0]) {
+                        formData.append('foto', fotoInput.files[0]);
+                    }
+
+                    // ID da loja
+                    formData.append('lojaId', document.querySelector('input[name="lojaId"]').value);
+
+                    // Enviar para API - CORRIJA O ENDPOINT!
+                    // VERIFIQUE SE O ENDPOINT CORRETO É /api/lojas OU /api/minha-loja
+                    const token = localStorage.getItem('jwtToken') || '';
+                    const response = await fetch('/api/minha-loja', { // ou /api/lojas
+                        method: 'POST',
+                        headers: {
+                            'Authorization': token ? `Bearer ${token}` : ''
+                        },
+                        body: formData
+                    });
+
+                    const result = await response.json();
+
+                    if (response.ok) {
+                        alert('✅ Loja atualizada com sucesso!');
+                        // Redireciona SEM recarregar infinitamente
+                        window.location.replace('/minha-loja');
+                    } else {
+                        throw new Error(result.message || 'Erro ao atualizar loja');
+                    }
+
+                } catch (error) {
+                    console.error('Erro:', error);
+                    alert(`❌ ${error.message}`);
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                }
+            });
+        }
+
+        console.log('✅ Editar loja - Scripts configurados');
+    });
+</script>
+
+</body>
+</html>

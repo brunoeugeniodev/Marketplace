@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lojas | Na Loja Tem</title>
+    <link rel="stylesheet" th:href="@{/estilos/style.css}">
+    <link rel="stylesheet" th:href="@{/estilos/lojas.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body id="page-lojas">
+
+<header th:replace="~{cabecalho :: header}"></header>
+
+<main>
+    <section class="page-header">
+        <div class="container">
+            <h1><i class="fas fa-store"></i> Nossas Lojas</h1>
+            <p>Descubra as melhores lojas do marketplace com produtos exclusivos e atendimento especializado</p>
+        </div>
+    </section>
+
+    <div class="container">
+        <div class="filters">
+            <!-- ... (filtros) ... -->
+        </div>
+
+        <div class="lojas-list">
+            <div class="loja-item" th:each="loja : ${lojas}">
+                <div class="loja-header">
+                    <img th:src="@{${loja.fotoUrl != null ? loja.fotoUrl : '/imagens/Logo.png'}}"
+                         class="loja-logo"
+                         th:alt="${loja.nome}"
+                         onerror="this.src='/imagens/Logo.png'">
+                    <!-- ... (resto do card) ... -->
+                </div>
+            </div>
+        </div>
+
+        <div th:if="${#lists.isEmpty(lojas)}" class="empty-state">
+            <!-- ... (estado vazio) ... -->
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{rodape :: footer}"></footer>
+
+<script th:src="@{/scripts/global.js}"></script>
+<script th:src="@{/scripts/lojas.js}"></script>
+</body>
+</html>

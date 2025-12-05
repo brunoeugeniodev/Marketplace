@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciar Produtos - Minha Loja</title>
+    <link rel="stylesheet" th:href="@{/estilos/style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .produtos-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .produto-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            overflow: hidden;
+            transition: transform 0.3s;
+        }
+
+        .produto-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .produto-imagem {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .produto-info {
+            padding: 15px;
+        }
+
+        .produto-acoes {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .btn-add {
+            background: #28a745;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .btn-add:hover {
+            background: #218838;
+        }
+
+        .status-badge {
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .status-ativo {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-inativo {
+            background: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+<header th:replace="~{cabecalho :: header}"></header>
+
+<main class="produtos-container">
+    <div class="header">
+        <div>
+            <h1><i class="fas fa-box-open"></i> Gerenciar Produtos</h1>
+            <p th:if="${loja != null}">
+                Loja: <strong th:text="${loja.nome}"></strong>
+            </p>
+        </div>
+        <a th:href="@{/produtos/novo}" class="btn-add">
+            <i class="fas fa-plus"></i> Novo Produto
+        </a>
+    </div>
+
+    <!-- Mensagens de feedback -->
+    <div th:if="${success != null}" class="alert alert-success">
+        <i class="fas fa-check-circle"></i> <span th:text="${success}"></span>
+    </div>
+    <div th:if="${error != null}" class="alert alert-danger">
+        <i class="fas fa-exclamation-circle"></i> <span th:text="${error}"></span>
+    </div>
+
+    <!-- Lista de Produtos -->
+    <div th:if="${produtos != null and !produtos.isEmpty()}">
+        <div class="produtos-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;">
+            <div th:each="produto : ${produtos}" class="produto-card">
+                <img th:if="${produto.fotoUrl != null and !produto.fotoUrl.isEmpty()}"
+                     th:src="${produto.fotoUrl}"
+                     alt="Foto do produto"
+                     class="produto-imagem"
+                     onerror="this.src='https://via.placeholder.com/300x200?text=Sem+Imagem'">
+                <div th:unless="${produto.fotoUrl != null and !produto.fotoUrl.isEmpty()}"
+                     style="background: #f0f0f0; height: 200px; display: flex; align-items: center; justify-content: center; color: #666;">
+                    <i class="fas fa-image fa-3x"></i>
+                </div>
+
+                <div class="produto-info">
+                    <h3 style="margin: 0 0 10px 0;" th:text="${produto.nome}"></h3>
+                    <p style="color: #666; font-size: 14px; margin-bottom: 5px;"
+                       th:text="${produto.descricao != null and !produto.descricao.isEmpty()} ? ${produto.descricao} : 'Sem descrição'"></p>
+
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <span class="preco" style="font-size: 18px; font-weight: bold; color: #28a745;"
+                                  th:text="'R$ ' + ${#numbers.formatDecimal(produto.preco, 1, 2, 'POINT')}"></span>
+                        <span class="status-badge"
+                              th:classappend="${produto.ativo} ? 'status-ativo' : 'status-inativo'"
+                              th:text="${produto.ativo} ? 'ATIVO' : 'INATIVO'"></span>
+                    </div>
+
+                    <div style="display: flex; justify-content: space-between; font-size: 14px; color: #666; margin-bottom: 15px;">
+                        <span>Estoque: <strong th:text="${produto.quantidade}"></strong></span>
+                        <span th:if="${produto.categoria != null}"
+                              th:text="${produto.categoria}"></span>
+                    </div>
+
+                    <div class="produto-acoes">
+                        <a th:href="@{/produtos/editar/} + ${produto.id}"
+                           class="btn btn-sm btn-primary"
+                           style="flex: 1; text-align: center;">
+                            <i class="fas fa-edit"></i> Editar
+                        </a>
+
+                        <form th:action="@{/produtos/desativar/} + ${produto.id}"
+                              method="get"
+                              th:if="${produto.ativo}"
+                              style="flex: 1;">
+                            <button type="submit" class="btn btn-sm btn-warning" style="width: 100%;">
+                                <i class="fas fa-eye-slash"></i> Desativar
+                            </button>
+                        </form>
+
+                        <form th:action="@{/produtos/reativar/} + ${produto.id}"
+                              method="get"
+                              th:unless="${produto.ativo}"
+                              style="flex: 1;">
+                            <button type="submit" class="btn btn-sm btn-success" style="width: 100%;">
+                                <i class="fas fa-eye"></i> Reativar
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mensagem quando não há produtos -->
+    <div th:if="${produtos == null or produtos.isEmpty()}" style="text-align: center; padding: 50px 20px;">
+        <i class="fas fa-box-open fa-4x" style="color: #ddd; margin-bottom: 20px;"></i>
+        <h3>Nenhum produto cadastrado</h3>
+        <p>Comece cadastrando seu primeiro produto!</p>
+        <a th:href="@{/produtos/novo}" class="btn-add" style="margin-top: 20px;">
+            <i class="fas fa-plus"></i> Cadastrar Primeiro Produto
+        </a>
+    </div>
+
+    <!-- Voltar para Minha Loja -->
+    <div style="margin-top: 40px; text-align: center;">
+        <a th:href="@{/minha-loja}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Voltar para Minha Loja
+        </a>
+    </div>
+</main>
+
+<footer th:replace="~{rodape :: footer}"></footer>
+
+<script>
+    // Confirmação para desativar produto
+    document.querySelectorAll('form[action*="desativar"]').forEach(form => {
+        form.addEventListener('submit', function(e) {
+            if (!confirm('Tem certeza que deseja desativar este produto?')) {
+                e.preventDefault();
+            }
+        });
+    });
+</script>
+</body>
+</html>
