@@ -1,112 +1,285 @@
-/* Estilos específicos para página de loja individual */
+/* ========== PÁGINA LOJA INDIVIDUAL ========== */
 .loja-individual-page {
-    padding: 20px 0;
+    padding: 30px 0;
+    background: linear-gradient(135deg, rgba(255, 138, 101, 0.03) 0%, rgba(255, 77, 184, 0.03) 50%, rgba(26, 115, 232, 0.03) 100%);
 }
 
 .loja-header-section {
     display: flex;
-    gap: 30px;
-    margin-bottom: 30px;
+    gap: 40px;
+    margin-bottom: 40px;
     flex-wrap: wrap;
+    background: white;
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.08);
+    position: relative;
+    overflow: hidden;
+}
+
+.loja-header-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 5px;
+    background: var(--gradient-main);
 }
 
 .loja-banner {
     flex: 1;
-    min-width: 300px;
+    min-width: 350px;
 }
 
 .loja-image {
     width: 100%;
-    max-height: 400px;
+    max-height: 450px;
     object-fit: cover;
-    border-radius: 10px;
+    border-radius: 12px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    transition: var(--transition);
+}
+
+.loja-image:hover {
+    transform: scale(1.02);
 }
 
 .loja-info-basic {
     flex: 2;
-    min-width: 300px;
+    min-width: 350px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.loja-info-basic h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    background: var(--gradient-main);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 15px;
+}
+
+.loja-info-basic p {
+    color: var(--gray-color);
+    line-height: 1.8;
+    font-size: 1.05rem;
 }
 
 .store-nav {
-    margin: 30px 0;
-    border-bottom: 1px solid #ddd;
+    margin: 40px 0 30px;
+    border-bottom: 3px solid #f5f5f5;
+    background: white;
+    border-radius: 15px 15px 0 0;
+    box-shadow: 0 3px 15px rgba(0, 0, 0, 0.05);
 }
 
 .store-nav ul {
     display: flex;
-    gap: 20px;
+    gap: 10px;
     list-style: none;
     padding: 0;
+    margin: 0;
+}
+
+.store-nav li {
+    flex: 1;
 }
 
 .store-nav a {
-    padding: 10px 0;
+    display: block;
+    padding: 18px 25px;
     text-decoration: none;
-    color: #666;
+    color: var(--gray-color);
     position: relative;
+    text-align: center;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border-radius: 12px 12px 0 0;
+}
+
+.store-nav a:hover {
+    color: var(--primary-blue);
+    background: rgba(26, 115, 232, 0.05);
 }
 
 .store-nav a.active {
-    color: #007bff;
-    font-weight: bold;
+    color: var(--primary-blue);
+    font-weight: 700;
+    background: linear-gradient(135deg, rgba(255, 138, 101, 0.1) 0%, rgba(26, 115, 232, 0.1) 100%);
 }
 
 .store-nav a.active::after {
     content: '';
     position: absolute;
-    bottom: -1px;
+    bottom: -3px;
     left: 0;
     right: 0;
-    height: 2px;
-    background: #007bff;
+    height: 3px;
+    background: var(--gradient-main);
+    border-radius: 3px 3px 0 0;
 }
 
 .store-section {
-    margin: 40px 0;
-    padding: 20px 0;
+    margin: 50px 0;
+    padding: 40px;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.08);
+}
+
+.store-section h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 30px;
+    color: var(--dark-color);
+    padding-bottom: 20px;
+    border-bottom: 3px solid #f5f5f5;
 }
 
 .products-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 20px;
-    margin-top: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 30px;
+    margin-top: 30px;
 }
 
 .product-card {
-    border: 1px solid #ddd;
-    border-radius: 8px;
+    border: 2px solid #f0f0f0;
+    border-radius: 15px;
     overflow: hidden;
-    transition: transform 0.3s;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    background: white;
+    display: flex;
+    flex-direction: column;
 }
 
 .product-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    transform: translateY(-8px);
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
+    border-color: var(--primary-blue);
 }
 
 .product-image {
-    height: 200px;
+    height: 220px;
     overflow: hidden;
+    background: linear-gradient(135deg, rgba(255, 138, 101, 0.05) 0%, rgba(26, 115, 232, 0.05) 100%);
+    position: relative;
 }
 
 .product-image img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    transition: transform 0.4s ease;
+}
+
+.product-card:hover .product-image img {
+    transform: scale(1.1);
 }
 
 .product-info {
-    padding: 15px;
+    padding: 20px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.product-info h3 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--dark-color);
+    margin-bottom: 10px;
+}
+
+.product-info p {
+    color: var(--gray-color);
+    font-size: 0.9rem;
+    margin-bottom: 15px;
+    flex: 1;
+}
+
+.product-price {
+    font-size: 1.5rem;
+    font-weight: 700;
+    background: var(--gradient-main);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 15px;
 }
 
 .btn-add-cart {
     width: 100%;
-    padding: 10px;
-    background: #28a745;
+    padding: 14px;
+    background: var(--gradient-main);
     color: white;
     border: none;
+    border-radius: 10px;
     cursor: pointer;
+    font-weight: 700;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
 }
 
-/* E outros estilos necessários... */
+.btn-add-cart:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(26, 115, 232, 0.3);
+}
+
+.btn-add-cart:active {
+    transform: translateY(0);
+}
+
+/* Estado vazio */
+.empty-state {
+    text-align: center;
+    padding: 80px 40px;
+    color: var(--gray-color);
+}
+
+.empty-state i {
+    font-size: 5rem;
+    background: var(--gradient-main);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    opacity: 0.5;
+    margin-bottom: 20px;
+}
+
+.empty-state h3 {
+    font-size: 1.8rem;
+    color: var(--dark-color);
+    margin-bottom: 10px;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .loja-header-section {
+        padding: 25px;
+    }
+
+    .store-nav ul {
+        flex-direction: column;
+    }
+
+    .store-nav a {
+        border-radius: 8px;
+    }
+
+    .store-nav a.active::after {
+        bottom: 0;
+        left: 0;
+        right: auto;
+        width: 3px;
+        height: 100%;
+    }
+}

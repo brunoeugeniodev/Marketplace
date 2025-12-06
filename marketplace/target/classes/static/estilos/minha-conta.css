@@ -1,28 +1,32 @@
 /* MINHA CONTA */
 .minha-conta-container {
     padding: 40px 0;
-    background-color: var(--background-gray);
+    background: linear-gradient(135deg, rgba(255, 138, 101, 0.05) 0%, rgba(255, 77, 184, 0.05) 50%, rgba(26, 115, 232, 0.05) 100%);
     min-height: calc(100vh - 300px);
 }
 
 .minha-conta-content {
     display: grid;
-    grid-template-columns: 250px 1fr;
+    grid-template-columns: 280px 1fr;
     gap: 30px;
 }
 
 .account-sidebar {
     background: white;
-    border-radius: 10px;
-    box-shadow: var(--shadow);
-    padding: 20px 0;
+    border-radius: 15px;
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.08);
+    padding: 0;
     height: fit-content;
+    overflow: hidden;
+    position: sticky;
+    top: 120px;
 }
 
 .user-profile {
     text-align: center;
-    padding: 20px;
-    border-bottom: 1px solid #eee;
+    padding: 30px 20px;
+    background: var(--gradient-main);
+    color: white;
 }
 
 .user-avatar {
@@ -30,20 +34,22 @@
     height: 100px;
     border-radius: 50%;
     object-fit: cover;
-    border: 3px solid var(--primary-blue);
+    border: 4px solid rgba(255, 255, 255, 0.3);
     margin-bottom: 15px;
-    background: #f8f9fa;
+    background: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
 }
 
 .user-name {
-    font-weight: 600;
-    color: var(--dark-color);
-    margin-bottom: 5px;
-    font-size: 1.2rem;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 8px;
+    font-size: 1.3rem;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .user-email {
-    color: var(--gray-color);
+    color: rgba(255, 255, 255, 0.9);
     font-size: 0.9rem;
     word-break: break-all;
 }
@@ -51,35 +57,63 @@
 .account-nav ul {
     list-style: none;
     padding: 0;
+    margin: 0;
 }
 
 .account-nav li {
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.account-nav li:last-child {
+    border-bottom: none;
 }
 
 .account-nav a {
     display: block;
-    padding: 15px 25px;
+    padding: 18px 25px;
     color: var(--dark-color);
     text-decoration: none;
-    transition: var(--transition);
+    transition: all 0.3s ease;
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
+    font-weight: 500;
 }
 
-.account-nav a:hover,
-.account-nav a.active {
-    background: rgba(26, 115, 232, 0.1);
+.account-nav a i {
+    width: 20px;
+    text-align: center;
+    color: var(--gray-color);
+    transition: var(--transition);
+}
+
+.account-nav a:hover {
+    background: linear-gradient(90deg, rgba(255, 138, 101, 0.1) 0%, rgba(26, 115, 232, 0.1) 100%);
     color: var(--primary-blue);
-    border-left: 3px solid var(--primary-blue);
+    padding-left: 30px;
+}
+
+.account-nav a:hover i {
+    color: var(--primary-orange);
+    transform: scale(1.2);
+}
+
+.account-nav a.active {
+    background: linear-gradient(90deg, rgba(255, 138, 101, 0.15) 0%, rgba(26, 115, 232, 0.15) 100%);
+    color: var(--primary-blue);
+    border-left: 4px solid var(--primary-orange);
+    font-weight: 600;
+}
+
+.account-nav a.active i {
+    color: var(--primary-orange);
 }
 
 .account-content {
     background: white;
-    border-radius: 10px;
-    box-shadow: var(--shadow);
-    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.08);
+    padding: 40px;
 }
 
 .account-section {
@@ -88,67 +122,67 @@
 
 .account-section.active {
     display: block;
+    animation: fadeIn 0.4s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .account-info {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 25px;
     margin: 30px 0;
 }
 
 .info-item {
-    padding: 15px;
-    border: 1px solid #eee;
-    border-radius: 5px;
+    padding: 20px;
+    border: 2px solid #f0f0f0;
+    border-radius: 10px;
+    transition: var(--transition);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 1) 0%, rgba(248, 249, 250, 1) 100%);
+}
+
+.info-item:hover {
+    border-color: var(--primary-blue);
+    box-shadow: 0 5px 15px rgba(26, 115, 232, 0.1);
+    transform: translateY(-2px);
 }
 
 .info-item label {
     display: block;
     font-weight: 600;
-    color: var(--dark-color);
-    margin-bottom: 5px;
-    font-size: 0.9rem;
+    color: var(--primary-blue);
+    margin-bottom: 8px;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .info-item span {
-    color: var(--gray-color);
-    font-size: 0.95rem;
+    color: var(--dark-color);
+    font-size: 1.05rem;
+    font-weight: 500;
 }
 
-/* DROPDOWN DO HEADER */
-.user-dropdown {
-    position: relative;
-    display: inline-block;
-    margin-left: 15px;
-}
+/* Responsividade */
+@media (max-width: 992px) {
+    .minha-conta-content {
+        grid-template-columns: 1fr;
+    }
 
-.user-menu-btn {
-    background: none;
-    border: none;
-    color: white;
-    font-size: 1rem;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 15px;
-    border-radius: 5px;
-    transition: var(--transition);
+    .account-sidebar {
+        position: static;
+    }
 }
-
-.user-menu-btn:hover {
-    background: rgba(255, 255, 255, 0.1);
-}
-
-.user-dropdown-content {
-    display: none;
-    position: absolute;
-    top: 100%;
-    right: 0;
-    background: white;
-    min-width: 200px;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
     border-radius: 5px;
     z-index: 1000;
     overflow: hidden;

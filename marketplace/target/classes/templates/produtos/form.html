@@ -164,9 +164,12 @@
     </div>
 
     <!-- Formulário -->
-    <form th:action="${modo == 'cadastro'} ? @{/produtos/novo} : @{/produtos/editar/} + ${produtoId}"
+    <form th:action="${modo == 'cadastro'} ? @{/produtos/novo} : @{/produtos/editar/{id}(id=${produtoId})}"
           method="post"
           th:object="${produto}">
+
+        <!-- hidden lojaId -->
+        <input type="hidden" th:field="*{lojaId}" />
 
         <div class="form-grid">
             <!-- Nome -->
@@ -274,12 +277,15 @@
 
 <script>
     // Formatação do preço
-    document.getElementById('preco').addEventListener('blur', function(e) {
-        let value = parseFloat(e.target.value);
-        if (!isNaN(value) && value > 0) {
-            e.target.value = value.toFixed(2);
-        }
-    });
+    const precoEl = document.getElementById('preco');
+    if (precoEl) {
+        precoEl.addEventListener('blur', function(e) {
+            let value = parseFloat(e.target.value);
+            if (!isNaN(value) && value > 0) {
+                e.target.value = value.toFixed(2);
+            }
+        });
+    }
 
     // Contador de caracteres para descrição
     const descricao = document.getElementById('descricao');
@@ -300,6 +306,98 @@
         descricao.addEventListener('input', updateCharCount);
         updateCharCount(); // Inicial
     }
+
+    // AJAX submit (progressivo): usa o endpoint REST /produtos/api para criar produto via fetch
+    (function() {
+        const form = document.querySelector('form[th\:object]') || document.querySelector('form');
+        if (!form) return;
+
+        form.addEventListener('submit', async function(e) {
+            // Se o usuário segurou shift+enter etc, deixe o submit padrão
+            // Mas vamos priorizar a submissão AJAX para melhor feedback
+            e.preventDefault();
+
+            // Monta o objeto a partir dos campos do formulário
+            const formData = new FormData(form);
+            const payload = {};
+            formData.forEach((value, key) => {
+                // converte números
+                if (key === 'preco') {
+                    payload[key] = value ? parseFloat(value) : null;
+                } else if (key === 'quantidade' || key === 'lojaId') {
+                    payload[key] = value ? Number(value) : null;
+                } else if (key === 'destaque') {
+                    // checkboxes: se presente, o FormData terá 'on' ou valor; converter para boolean
+                    payload[key] = true;
+                } else {
+                    payload[key] = value;
+                }
+            });
+
+            // Se checkbox destaque não estiver no FormData, set false
+            if (!('destaque' in payload)) payload.destaque = false;
+
+            // Remove campos vazios que podem quebrar a API
+            Object.keys(payload).forEach(k => {
+                if (payload[k] === "" || payload[k] === null || typeof payload[k] === 'undefined') {
+                    delete payload[k];
+                }
+            });
+
+            // Mostra loading simples
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const originalText = submitBtn ? submitBtn.innerHTML : null;
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Salvando...';
+            }
+
+            try {
+                const resp = await fetch('/produtos/api', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload),
+                    credentials: 'same-origin'
+                });
+
+                if (resp.status === 201) {
+                    const data = await resp.json();
+                    // redirect para a página de gerenciamento
+                    const lojaId = payload.lojaId || (data && data.lojaId) || '';
+                    window.location.href = '/produtos/gerenciar?lojaId=' + lojaId;
+                    return;
+                } else if (resp.status === 400 || resp.status === 422) {
+                    const text = await resp.text();
+                    showInlineError(text || 'Erro de validação');
+                } else if (resp.status === 401) {
+                    // não autenticado: redireciona para login
+                    window.location.href = '/login';
+                    return;
+                } else {
+                    const text = await resp.text();
+                    showInlineError('Erro ao cadastrar produto: ' + (text || resp.statusText));
+                }
+            } catch (error) {
+                showInlineError('Erro de rede ao cadastrar produto: ' + error.message);
+            } finally {
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalText;
+                }
+            }
+        });
+
+        function showInlineError(message) {
+            let container = document.querySelector('.alert-error');
+            if (!container) {
+                container = document.createElement('div');
+                container.className = 'alert alert-error';
+                form.parentNode.insertBefore(container, form);
+            }
+            container.innerHTML = '<i class="fas fa-exclamation-circle"></i> ' + message;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    })();
 </script>
 </body>
 </html>

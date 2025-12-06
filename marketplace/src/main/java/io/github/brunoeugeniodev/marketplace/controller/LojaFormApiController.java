@@ -1,4 +1,4 @@
-package io.github.brunoeugeniodev.marketplace.controller.api;
+package io.github.brunoeugeniodev.marketplace.controller;
 
 import io.github.brunoeugeniodev.marketplace.models.Loja;
 import io.github.brunoeugeniodev.marketplace.models.Usuario;
@@ -80,12 +80,37 @@ public class LojaFormApiController {
             loja.setUsuario(usuario);
             loja.setAtivo(true);
 
+            // Normaliza e seta categoria
+            if (categoria != null && !categoria.trim().isEmpty()) {
+                loja.setCategoria(categoria.trim().toLowerCase());
+            }
+
             // Salvar foto se existir
             if (foto != null && !foto.isEmpty()) {
-                // Aqui você pode implementar o upload da foto
-                String fotoUrl = "/uploads/lojas/" + System.currentTimeMillis() + "_" + foto.getOriginalFilename();
-                loja.setFotoUrl(fotoUrl);
-                // Salvar o arquivo no sistema de arquivos (implementar se necessário)
+                try {
+                    String uploadsDir = System.getProperty("user.dir") + "/uploads/lojas/";
+                    java.nio.file.Path uploadPath = java.nio.file.Paths.get(uploadsDir);
+                    if (!java.nio.file.Files.exists(uploadPath)) {
+                        java.nio.file.Files.createDirectories(uploadPath);
+                    }
+
+                    String originalFilename = java.nio.file.Paths.get(foto.getOriginalFilename()).getFileName().toString();
+                    String filename = System.currentTimeMillis() + "_" + originalFilename.replaceAll("[^a-zA-Z0-9._-]", "_");
+                    java.nio.file.Path filePath = uploadPath.resolve(filename);
+
+                    // Salva arquivo no filesystem
+                    try (java.io.InputStream is = foto.getInputStream()) {
+                        java.nio.file.Files.copy(is, filePath);
+                    }
+
+                    // Define a URL pública para acessar o upload
+                    String fotoUrl = "/uploads/lojas/" + filename;
+                    loja.setFotoUrl(fotoUrl);
+
+                } catch (Exception ex) {
+                    // Se falhar ao salvar a foto, registra e continua sem foto
+                    ex.printStackTrace();
+                }
             }
 
             // Salvar loja

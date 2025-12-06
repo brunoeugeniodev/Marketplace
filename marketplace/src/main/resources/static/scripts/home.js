@@ -75,6 +75,109 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    // ========== ADICIONAR AO CARRINHO ==========
+    const botoesAddCarrinho = document.querySelectorAll('.btn-add-carrinho');
+
+    console.log(`🛒 Encontrados ${botoesAddCarrinho.length} botões "Adicionar ao Carrinho"`);
+
+    botoesAddCarrinho.forEach((botao, index) => {
+        console.log(`Botão ${index + 1}:`, {
+            id: botao.getAttribute('data-produto-id'),
+            nome: botao.getAttribute('data-produto-nome'),
+            preco: botao.getAttribute('data-produto-preco')
+        });
+
+        botao.addEventListener('click', async function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            const produtoId = this.getAttribute('data-produto-id');
+            const produtoNome = this.getAttribute('data-produto-nome');
+
+            if (!produtoId) {
+                console.error('ID do produto não encontrado');
+                return;
+            }
+
+            // Verificar se está logado
+            const token = localStorage.getItem('jwtToken');
+            if (!token) {
+                if (typeof window.showNotification === 'function') {
+                    window.showNotification('Você precisa estar logado para adicionar produtos ao carrinho!', 'error');
+                } else {
+                    alert('Você precisa estar logado para adicionar produtos ao carrinho!');
+                }
+                setTimeout(() => {
+                    window.location.href = '/login?redirect=' + encodeURIComponent(window.location.pathname);
+                }, 1500);
+                return;
+            }
+
+            // Desabilitar botão durante a requisição
+            const originalHtml = this.innerHTML;
+            this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Adicionando...';
+            this.classList.add('loading');
+            this.disabled = true;
+
+            try {
+                const response = await fetch('/api/carrinho/itens', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        produtoId: parseInt(produtoId),
+                        quantidade: 1
+                    })
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+
+                    // Atualizar contador do carrinho usando função global
+                    if (typeof window.atualizarContadorCarrinho === 'function') {
+                        window.atualizarContadorCarrinho(result);
+                    }
+
+                    // Feedback visual
+                    this.innerHTML = '<i class="fas fa-check"></i> Adicionado!';
+                    this.style.background = '#2e7d32';
+
+                    if (typeof window.showNotification === 'function') {
+                        window.showNotification(`✅ ${produtoNome} adicionado ao carrinho!`, 'success');
+                    }
+
+                    // Restaurar botão após 2 segundos
+                    setTimeout(() => {
+                        this.innerHTML = originalHtml;
+                        this.style.background = '';
+                        this.classList.remove('loading');
+                        this.disabled = false;
+                    }, 2000);
+
+                } else {
+                    const error = await response.json();
+                    throw new Error(error.message || 'Erro ao adicionar produto ao carrinho');
+                }
+
+            } catch (error) {
+                console.error('Erro ao adicionar ao carrinho:', error);
+
+                if (typeof window.showNotification === 'function') {
+                    window.showNotification(`❌ ${error.message}`, 'error');
+                } else {
+                    alert(`❌ ${error.message}`);
+                }
+
+                // Restaurar botão
+                this.innerHTML = originalHtml;
+                this.classList.remove('loading');
+                this.disabled = false;
+            }
+        });
+    });
+
     // ========== BOTÃO CRIAR LOJA ==========
     const btnCriarLoja = document.getElementById('btn-criar-loja');
     if (btnCriarLoja) {

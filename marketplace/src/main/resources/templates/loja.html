@@ -20,10 +20,10 @@
     <!-- Cabeçalho da Loja -->
     <div class="loja-header-section">
         <div class="loja-banner">
-            <img th:src="${loja.fotoUrl != null and loja.fotoUrl != '' ? loja.fotoUrl : '/imagens/placeholder_loja.png'}"
+            <img th:src="${loja.fotoUrl != null and loja.fotoUrl != '' ? (loja.fotoUrl.startsWith('/') ? loja.fotoUrl : '/uploads/' + loja.fotoUrl) : '/imagens/Logo.png'}"
                  th:alt="${loja.nome}"
                  class="loja-image"
-                 onerror="this.src='/imagens/placeholder_loja.png'">
+                 onerror="this.onerror=null; this.src='/imagens/Logo.png'">
         </div>
 
         <div class="loja-info-basic">
@@ -96,9 +96,9 @@
             <div class="product-card" th:each="produto : ${produtos}">
                 <a th:href="@{/produto/{id}(id=${produto.id})}" class="product-link">
                     <div class="product-image">
-                        <img th:src="${produto.fotoUrl != null ? produto.fotoUrl : '/imagens/placeholder_produto.png'}"
+                        <img th:src="${produto.fotoUrl != null ? produto.fotoUrl : '/imagens/Logo.png'}"
                              th:alt="${produto.nome}"
-                             onerror="this.src='/imagens/placeholder_produto.png'">
+                             onerror="this.onerror=null; this.src='/imagens/Logo.png'">
                     </div>
                     <div class="product-info">
                         <h3 th:text="${produto.nome}">Nome do Produto</h3>
@@ -116,7 +116,7 @@
                         </div>
                     </div>
                 </a>
-                <button class="btn-add-cart" th:data-produto-id="${produto.id}">
+                <button class="btn-add-cart" th:attr="data-produto-id=${produto.id}">
                     <i class="fas fa-cart-plus"></i> Adicionar ao Carrinho
                 </button>
             </div>
@@ -138,7 +138,7 @@
                     <i class="fas fa-calendar-alt"></i>
                     <div>
                         <h4>Desde</h4>
-                        <p th:text="${loja.dataCadastro != null ? #temporals.format(loja.dataCadastro, 'dd/MM/yyyy') : 'Data não informada'}">
+                        <p th:text="${loja.dataCriacao != null ? #temporals.format(loja.dataCriacao, 'dd/MM/yyyy') : 'Data não informada'}">
                             2023
                         </p>
                     </div>
@@ -146,22 +146,22 @@
                 <div class="detail-item">
                     <i class="fas fa-shopping-bag"></i>
                     <div>
-                        <h4>Produtos Vendidos</h4>
-                        <p th:text="${produtos != null ? produtos.size() : '0'}">150+</p>
+                        <h4>Total de Produtos</h4>
+                        <p th:text="${produtos != null ? produtos.size() : '0'}">0</p>
                     </div>
                 </div>
                 <div class="detail-item">
-                    <i class="fas fa-users"></i>
+                    <i class="fas fa-star"></i>
                     <div>
-                        <h4>Seguidores</h4>
-                        <p th:text="${loja.seguidores != null ? loja.seguidores : '0'}">500+</p>
+                        <h4>Avaliação Média</h4>
+                        <p th:text="${loja.avaliacaoMedia != null ? loja.avaliacaoMedia + '/5' : 'Sem avaliações'}">5.0/5</p>
                     </div>
                 </div>
             </div>
 
             <div class="about-description">
-                <h3>Nossa História</h3>
-                <p th:text="${loja.descricaoDetalhada != null ? loja.descricaoDetalhada : 'Esta loja ainda não adicionou uma descrição detalhada.'}">
+                <h3>Sobre a Loja</h3>
+                <p th:text="${loja.descricao != null and loja.descricao != '' ? loja.descricao : 'Esta loja ainda não adicionou uma descrição.'}">
                     Descrição detalhada da loja, história, missão, valores, etc.
                 </p>
             </div>

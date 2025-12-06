@@ -12,6 +12,7 @@ import io.github.brunoeugeniodev.marketplace.service.UsuarioService;
 import io.github.brunoeugeniodev.marketplace.util.MapperUtil;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -28,6 +29,7 @@ import java.util.Optional;
 
 @Controller
 @RequiredArgsConstructor
+@Slf4j
 @RequestMapping("/produtos")
 public class ProdutoController {
 
@@ -140,15 +142,18 @@ public class ProdutoController {
         Usuario usuario = usuarioService.loadUsuarioByUsername(userDetails.getUsername()); // ← CORRETO
 
         if (result.hasErrors()) {
+            log.warn("Erro de validação ao criar produto: {}", result.getAllErrors());
             redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.produto", result);
             redirectAttributes.addFlashAttribute("produto", produtoDTO);
             return "redirect:/produtos/novo?lojaId=" + produtoDTO.getLojaId();
         }
 
         try {
+            log.info("Tentando criar produto para lojaId={}: {}", produtoDTO.getLojaId(), produtoDTO);
             // Buscar a loja pelo ID no DTO
             Optional<Loja> lojaOpt = lojaService.buscarPorId(produtoDTO.getLojaId());
             if (lojaOpt.isEmpty()) {
+                log.error("Loja não encontrada para id={}", produtoDTO.getLojaId());
                 redirectAttributes.addFlashAttribute("error", "Loja não encontrada");
                 return "redirect:/produtos/novo?lojaId=" + produtoDTO.getLojaId();
             }
@@ -157,6 +162,7 @@ public class ProdutoController {
 
             // Verificar se a loja pertence ao usuário
             if (!loja.getUsuario().getId().equals(usuario.getId())) {
+                log.warn("Usuário {} não tem permissão para adicionar produtos a loja {}", usuario.getId(), loja.getId());
                 redirectAttributes.addFlashAttribute("error", "Você não tem permissão para adicionar produtos a esta loja");
                 return "redirect:/produtos/novo?lojaId=" + produtoDTO.getLojaId();
             }
@@ -165,12 +171,15 @@ public class ProdutoController {
             produto.setLoja(loja); // Associar a loja ao produto
             produto.setAtivo(true); // Produto começa ativo
 
-            produtoService.criarProduto(produto, loja, usuario);
+            Produto salvo = produtoService.criarProduto(produto, loja, usuario);
+
+            log.info("Produto criado com sucesso id={} nome={} lojaId={}", salvo.getId(), salvo.getNome(), loja.getId());
 
             redirectAttributes.addFlashAttribute("success", "Produto cadastrado com sucesso!");
             return "redirect:/produtos/gerenciar?lojaId=" + loja.getId();
 
         } catch (Exception e) {
+            log.error("Erro ao criar produto: ", e);
             redirectAttributes.addFlashAttribute("error", "Erro ao cadastrar produto: " + e.getMessage());
             redirectAttributes.addFlashAttribute("produto", produtoDTO);
             return "redirect:/produtos/novo?lojaId=" + (produtoDTO.getLojaId() != null ? produtoDTO.getLojaId() : "");
@@ -223,12 +232,14 @@ public class ProdutoController {
         Usuario usuario = usuarioService.loadUsuarioByUsername(userDetails.getUsername()); // ← CORRETO
 
         if (result.hasErrors()) {
+            log.warn("Erro de validação ao atualizar produto id={}: {}", id, result.getAllErrors());
             redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.produto", result);
             redirectAttributes.addFlashAttribute("produto", produtoDTO);
             return "redirect:/produtos/editar/" + id;
         }
 
         try {
+            log.info("Tentando atualizar produto id={} com dados {}", id, produtoDTO);
             // Buscar produto atual para obter a loja
             Optional<Produto> produtoOpt = produtoService.buscarPorId(id);
             if (produtoOpt.isEmpty()) {
@@ -250,10 +261,13 @@ public class ProdutoController {
 
             produtoService.atualizarProduto(id, produtoAtualizado, usuario);
 
+            log.info("Produto atualizado com sucesso id={}", id);
+
             redirectAttributes.addFlashAttribute("success", "Produto atualizado com sucesso!");
             return "redirect:/produtos/gerenciar?lojaId=" + produtoExistente.getLoja().getId();
 
         } catch (Exception e) {
+            log.error("Erro ao atualizar produto id={}: ", id, e);
             redirectAttributes.addFlashAttribute("error", "Erro ao atualizar produto: " + e.getMessage());
             redirectAttributes.addFlashAttribute("produto", produtoDTO);
             return "redirect:/produtos/editar/" + id;
@@ -386,3 +400,4 @@ public class ProdutoController {
         return ResponseEntity.noContent().build();
     }
 }
+

@@ -8,21 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script>
         console.log('🔍 Iniciando Minha Loja...');
-
-        // Monitora tentativas de recarregamento
-        let reloadAttempts = 0;
-
-        window.addEventListener('beforeunload', function(event) {
-            reloadAttempts++;
-            console.warn(`⚠️ Tentativa de recarregamento #${reloadAttempts}`);
-
-            if (reloadAttempts > 2) {
-                // Bloqueia após 2 tentativas
-                event.preventDefault();
-                event.returnValue = 'Recarregamento bloqueado para evitar loop';
-                console.error('🚨 RECARREGAMENTO BLOQUEADO - Loop detectado');
-            }
-        });
+        // Loop prevention code removed - was causing issues
     </script>
 </head>
 <body>
@@ -104,9 +90,9 @@
                 <div class="store-details">
                     <div class="store-basic">
                         <div class="store-logo">
-                            <img th:src="${loja.fotoUrl != null ? loja.fotoUrl : '/imagens/placeholder_loja.png'}"
+                            <img th:src="${loja.fotoUrl != null ? loja.fotoUrl : '/imagens/Logo.png'}"
                                  th:alt="${loja.nome}"
-                                 onerror="this.src='/imagens/imagem_indisponivel.jpg'; this.onerror=null;">
+                                 onerror="this.src='/imagens/Logo.png'; this.onerror=null;">
                         </div>
                         <div class="store-main-info">
                             <h3 th:text="${loja.nome}">Nome da Loja</h3>

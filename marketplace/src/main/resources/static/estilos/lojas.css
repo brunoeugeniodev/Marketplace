@@ -1,377 +1,385 @@
-/* PÁGINA DE LOJAS */
+/* ========== PÁGINA DE LOJAS ========== */
+
 .page-header {
-    background: linear-gradient(135deg, var(--primary-blue), var(--primary-orange));
+    background: var(--gradient-main);
     color: white;
     padding: 70px 0;
     text-align: center;
-    margin-bottom: 40px;
-    position: relative;
-    overflow: hidden;
+    margin-bottom: 50px;
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.15);
 }
 
-.page-header::before {
+.page-header h1 {
+    font-size: 2.8rem;
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    font-weight: 700;
+    text-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+}
+
+.page-header p {
+    font-size: 1.15rem;
+    opacity: 0.95;
+    max-width: 700px;
+    margin: 0 auto;
+    line-height: 1.6;
+}
+
+.lojas-container {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 35px;
+    margin-top: 40px;
+    margin-bottom: 60px;
+}
+
+/* ========== FILTROS SIDEBAR ========== */
+.filters-sidebar {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.08);
+    height: fit-content;
+    position: sticky;
+    top: 120px;
+    border-top: 5px solid;
+    border-image: var(--gradient-main) 1;
+}
+
+.filters-sidebar h3 {
+    color: var(--dark-color);
+    font-size: 1.4rem;
+    margin-bottom: 25px;
+    padding-bottom: 18px;
+    border-bottom: 3px solid #f5f5f5;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 700;
+}
+
+.filters-sidebar h3 i {
+    color: var(--primary-orange);
+}
+
+.filter-group {
+    margin-bottom: 28px;
+}
+
+.filter-group h4 {
+    color: var(--dark-color);
+    font-size: 1.05rem;
+    margin-bottom: 15px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.filter-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.filter-option {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 18px;
+    border-radius: 10px;
+    text-decoration: none;
+    color: var(--gray-color);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 2px solid transparent;
+    background: #f8f9fa;
+    font-weight: 500;
+}
+
+.filter-option:hover {
+    background: linear-gradient(135deg, rgba(255, 138, 101, 0.1) 0%, rgba(26, 115, 232, 0.1) 100%);
+    color: var(--primary-blue);
+    transform: translateX(5px);
+}
+
+.filter-option.active {
+    background: linear-gradient(135deg, rgba(255, 138, 101, 0.15) 0%, rgba(26, 115, 232, 0.15) 100%);
+    color: var(--primary-blue);
+    border-color: var(--primary-blue);
+    font-weight: 700;
+    box-shadow: 0 3px 10px rgba(26, 115, 232, 0.2);
+}
+
+.filter-option i {
+    width: 22px;
+    text-align: center;
+    font-size: 1.1rem;
+}
+
+.filter-option.active i {
+    color: var(--primary-orange);
+}
+
+/* ========== LISTA DE LOJAS ========== */
+.lojas-main {
+    min-height: 400px;
+}
+
+.lojas-header {
+    margin-bottom: 35px;
+    padding-bottom: 25px;
+    border-bottom: 3px solid #f5f5f5;
+}
+
+.lojas-header h2 {
+    color: var(--dark-color);
+    font-size: 2rem;
+    margin-bottom: 10px;
+    font-weight: 700;
+}
+
+.lojas-header p {
+    color: var(--gray-color);
+    font-size: 1rem;
+}
+
+.lojas-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 30px;
+}
+
+.loja-card {
+    background: white;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 2px solid transparent;
+    text-decoration: none;
+    color: var(--dark-color);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.loja-card::before {
     content: '';
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
-    bottom: 0;
-    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><circle cx="50" cy="50" r="40" fill="none" stroke="white" stroke-width="0.5" opacity="0.1"/></svg>');
-    background-size: 100px 100px;
+    height: 5px;
+    background: var(--gradient-main);
+    opacity: 0;
+    transition: opacity 0.3s ease;
 }
 
-.page-header h1 {
-    font-size: 2.8rem;
-    margin-bottom: 15px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 15px;
-    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+.loja-card:hover::before {
+    opacity: 1;
 }
 
-.page-header p {
-    font-size: 1.2rem;
-    opacity: 0.9;
-    max-width: 600px;
-    margin: 0 auto;
-    line-height: 1.6;
-}
-
-.filters {
-    background: white;
-    padding: 25px;
-    border-radius: 15px;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
-    margin-bottom: 40px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    align-items: flex-end;
-    border: 1px solid #f0f0f0;
-}
-
-.filter-group {
-    flex: 1;
-    min-width: 200px;
-}
-
-.filter-group label {
-    display: block;
-    margin-bottom: 10px;
-    font-weight: 600;
-    color: var(--dark-color);
-    font-size: 0.95rem;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.filter-group select,
-.filter-group input {
-    width: 100%;
-    padding: 12px 15px;
-    border: 2px solid #e0e0e0;
-    border-radius: 8px;
-    font-size: 1rem;
-    transition: var(--transition);
-    background: white;
-    color: var(--dark-color);
-}
-
-.filter-group select:focus,
-.filter-group input:focus {
-    border-color: var(--primary-blue);
-    outline: none;
-    box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.1);
-}
-
-.btn-filter {
-    background: linear-gradient(135deg, var(--primary-blue), var(--primary-orange));
-    color: white;
-    border: none;
-    padding: 13px 25px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: 600;
-    transition: var(--transition);
-    height: 46px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    min-width: 120px;
-}
-
-.btn-filter:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 7px 20px rgba(26, 115, 232, 0.25);
-}
-
-.lojas-list {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-    gap: 30px;
-    margin-bottom: 50px;
-}
-
-.loja-item {
-    background: white;
-    border-radius: 15px;
-    overflow: hidden;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
-    transition: var(--transition);
-    border: 1px solid #f0f0f0;
-    display: flex;
-    flex-direction: column;
-}
-
-.loja-item:hover {
+.loja-card:hover {
     transform: translateY(-10px);
     box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
     border-color: var(--primary-blue);
 }
 
-.loja-header {
-    padding: 25px;
-    text-align: center;
-    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
-    position: relative;
+.loja-image {
+    height: 200px;
     overflow: hidden;
-}
-
-.loja-header::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: linear-gradient(135deg, var(--primary-blue), var(--primary-orange));
-}
-
-.loja-logo {
-    width: 120px;
-    height: 120px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 4px solid white;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-    margin: 0 auto 15px;
-    background: white;
-    padding: 5px;
-    transition: var(--transition);
-}
-
-.loja-item:hover .loja-logo {
-    transform: scale(1.05);
-    border-color: var(--primary-blue);
-}
-
-.loja-title {
-    font-size: 1.4rem;
-    color: var(--dark-color);
-    margin-bottom: 8px;
-    font-weight: 700;
-}
-
-.loja-location {
-    color: var(--gray-color);
-    font-size: 0.9rem;
-    margin-bottom: 12px;
+    background: linear-gradient(135deg, rgba(255, 138, 101, 0.1) 0%, rgba(26, 115, 232, 0.1) 100%);
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 6px;
+    position: relative;
+}
+
+.loja-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+}
+
+.loja-card:hover .loja-image img {
+    transform: scale(1.1);
+}
+
+.loja-info {
+    padding: 25px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.loja-info h3 {
+    font-size: 1.4rem;
+    margin-bottom: 12px;
+    color: var(--dark-color);
+    font-weight: 700;
+    background: var(--gradient-main);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.loja-descricao {
+    color: var(--gray-color);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin-bottom: 18px;
+    flex: 1;
+}
+
+.loja-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #f0f0f0;
+    margin-top: auto;
+}
+
+.loja-rating {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: var(--warning-color);
+    font-weight: 600;
+}
+
+.loja-rating i {
+    font-size: 1rem;
+}
+
+.loja-location {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: var(--gray-color);
+    font-size: 0.85rem;
 }
 
 .loja-location i {
     color: var(--primary-blue);
 }
 
-.loja-rating {
-    display: flex;
+.loja-badge {
+    display: inline-flex;
     align-items: center;
-    justify-content: center;
-    gap: 10px;
-    flex-wrap: wrap;
-}
-
-.loja-rating .stars {
-    display: flex;
-    gap: 3px;
-}
-
-.loja-rating i.fa-star {
-    color: #ffc107;
-    font-size: 0.9rem;
-}
-
-.loja-rating .rating-text {
-    color: var(--gray-color);
-    font-size: 0.85rem;
-    font-weight: 500;
-}
-
-.loja-body {
-    padding: 25px;
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-}
-
-.loja-description {
-    color: var(--gray-color);
-    font-size: 0.95rem;
-    line-height: 1.6;
-    margin-bottom: 20px;
-    flex-grow: 1;
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-}
-
-.loja-contact {
-    background: #f8f9fa;
-    padding: 15px;
-    border-radius: 10px;
-    margin-bottom: 20px;
-    border: 1px solid #e9ecef;
-}
-
-.contact-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 10px;
-    font-size: 0.9rem;
-}
-
-.contact-item:last-child {
-    margin-bottom: 0;
-}
-
-.contact-item i {
+    gap: 6px;
+    background: linear-gradient(135deg, rgba(26, 115, 232, 0.1), rgba(255, 138, 101, 0.1));
     color: var(--primary-blue);
-    width: 16px;
-    font-size: 0.85rem;
-}
-
-.contact-item span,
-.contact-item a {
-    color: var(--gray-color);
-    word-break: break-all;
-}
-
-.contact-item a {
-    color: var(--primary-blue);
-    text-decoration: none;
-    transition: var(--transition);
-}
-
-.contact-item a:hover {
-    color: var(--primary-orange);
-    text-decoration: underline;
-}
-
-.btn-visitar {
-    display: block;
-    width: 100%;
-    padding: 14px;
-    background: linear-gradient(135deg, var(--primary-blue), var(--primary-orange));
-    color: white;
-    text-align: center;
-    text-decoration: none;
-    border-radius: 8px;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
     font-weight: 600;
-    transition: var(--transition);
-    margin-top: auto;
+    margin-top: 10px;
+    width: fit-content;
+}
+
+.loja-action {
+    padding: 15px 20px;
+    background: #f8f9fa;
+    border-top: 1px solid #e9ecef;
+}
+
+.btn-ver-loja {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 10px;
-    font-size: 1rem;
-    border: none;
-    cursor: pointer;
+    color: var(--primary-blue);
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
 }
 
-.btn-visitar:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 7px 20px rgba(26, 115, 232, 0.25);
-    color: white;
+.loja-card:hover .btn-ver-loja {
+    gap: 15px;
 }
 
+.loja-card:hover .btn-ver-loja i {
+    transform: translateX(5px);
+}
+
+.btn-ver-loja i {
+    transition: transform 0.3s ease;
+}
+
+/* ========== ESTADO VAZIO ========== */
 .empty-state {
     text-align: center;
-    padding: 60px 30px;
-    grid-column: 1 / -1;
+    padding: 60px 20px;
     background: white;
-    border-radius: 15px;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
-    border: 2px dashed #e0e0e0;
-    margin: 20px 0;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    grid-column: 1 / -1;
 }
 
 .empty-state i {
-    font-size: 4.5rem;
-    color: #adb5bd;
+    color: var(--gray-color);
+    opacity: 0.3;
     margin-bottom: 20px;
-    opacity: 0.6;
 }
 
 .empty-state h3 {
     color: var(--dark-color);
+    font-size: 1.5rem;
     margin-bottom: 10px;
-    font-size: 1.8rem;
-    font-weight: 700;
 }
 
 .empty-state p {
     color: var(--gray-color);
-    max-width: 500px;
-    margin: 0 auto 25px;
-    line-height: 1.6;
-    font-size: 1.05rem;
+    font-size: 1rem;
+    margin-bottom: 25px;
 }
 
-/* Responsividade para telas menores */
+/* ========== RESPONSIVIDADE ========== */
 @media (max-width: 992px) {
-    .lojas-list {
-        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-        gap: 25px;
+    .lojas-container {
+        grid-template-columns: 1fr;
+    }
+
+    .filters-sidebar {
+        position: static;
+    }
+
+    .filter-options {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+
+    .filter-option {
+        flex: 1;
+        min-width: 140px;
     }
 }
 
 @media (max-width: 768px) {
-    .page-header {
-        padding: 50px 0;
-    }
-
     .page-header h1 {
-        font-size: 2.2rem;
+        font-size: 2rem;
     }
 
-    .filters {
-        flex-direction: column;
-        align-items: stretch;
+    .lojas-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .filters-sidebar {
         padding: 20px;
     }
 
-    .filter-group {
-        min-width: 100%;
+    .filter-options {
+        flex-direction: column;
     }
 
-    .btn-filter {
-        width: 100%;
-    }
-
-    .lojas-list {
-        grid-template-columns: 1fr;
-        gap: 20px;
-    }
-
-    .loja-item {
-        max-width: 100%;
+    .filter-option {
+        min-width: auto;
     }
 }
+

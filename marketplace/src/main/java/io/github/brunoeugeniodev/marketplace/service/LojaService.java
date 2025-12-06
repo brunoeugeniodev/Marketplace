@@ -156,6 +156,14 @@ public class LojaService {
         return lojaRepository.findByUsuarioEmail(email);
     }
 
+    // Novo: buscar lojas por categoria (case-insensitive)
+    public List<Loja> listarPorCategoria(String categoria) {
+        if (categoria == null || categoria.trim().isEmpty()) {
+            return listarLojasAtivas();
+        }
+        return lojaRepository.findByCategoriaIgnoreCaseAndAtivoTrue(categoria.trim());
+    }
+
     @Transactional
     public Loja desativarLoja(Long id, Usuario usuario) {
         return lojaRepository.findById(id)

@@ -20,32 +20,95 @@
         </div>
     </section>
 
-    <div class="container">
-        <div class="filters">
-            <!-- ... (filtros) ... -->
-        </div>
+    <div class="container lojas-container">
+        <!-- Filtros -->
+        <aside class="filters-sidebar">
+            <h3><i class="fas fa-filter"></i> Filtros</h3>
 
-        <div class="lojas-list">
-            <div class="loja-item" th:each="loja : ${lojas}">
-                <div class="loja-header">
-                    <img th:src="@{${loja.fotoUrl != null ? loja.fotoUrl : '/imagens/Logo.png'}}"
-                         class="loja-logo"
-                         th:alt="${loja.nome}"
-                         onerror="this.src='/imagens/Logo.png'">
-                    <!-- ... (resto do card) ... -->
+            <div class="filter-group">
+                <h4>Categorias</h4>
+                <div class="filter-options">
+                    <a th:href="@{/lojas}" class="filter-option" th:classappend="${categoria == null ? 'active' : ''}">
+                        <i class="fas fa-th"></i> Todas as Categorias
+                    </a>
+                    <a th:href="@{/lojas(categoria='papelaria')}" class="filter-option" th:classappend="${categoria == 'papelaria' ? 'active' : ''}">
+                        <i class="fas fa-pen"></i> Papelaria
+                    </a>
+                    <a th:href="@{/lojas(categoria='esportes')}" class="filter-option" th:classappend="${categoria == 'esportes' ? 'active' : ''}">
+                        <i class="fas fa-futbol"></i> Esportes
+                    </a>
+                    <a th:href="@{/lojas(categoria='livros')}" class="filter-option" th:classappend="${categoria == 'livros' ? 'active' : ''}">
+                        <i class="fas fa-book"></i> Livros
+                    </a>
+                    <a th:href="@{/lojas(categoria='games')}" class="filter-option" th:classappend="${categoria == 'games' ? 'active' : ''}">
+                        <i class="fas fa-gamepad"></i> Games
+                    </a>
+                    <a th:href="@{/lojas(categoria='roupas')}" class="filter-option" th:classappend="${categoria == 'roupas' ? 'active' : ''}">
+                        <i class="fas fa-tshirt"></i> Roupas
+                    </a>
                 </div>
             </div>
-        </div>
+        </aside>
 
-        <div th:if="${#lists.isEmpty(lojas)}" class="empty-state">
-            <!-- ... (estado vazio) ... -->
+        <!-- Lista de Lojas -->
+        <div class="lojas-main">
+            <div class="lojas-header">
+                <h2 th:if="${categoria != null}" th:text="${'Lojas de ' + categoria}">Todas as Lojas</h2>
+                <h2 th:unless="${categoria != null}">Todas as Lojas</h2>
+                <p th:text="${lojas.size() + ' loja(s) encontrada(s)'}">0 lojas encontradas</p>
+            </div>
+
+            <div class="lojas-grid" th:if="${not #lists.isEmpty(lojas)}">
+                <a th:href="@{/loja/{id}(id=${loja.id})}" class="loja-card" th:each="loja : ${lojas}">
+                    <div class="loja-image">
+                        <img th:src="${loja.fotoUrl != null and loja.fotoUrl != '' ? (loja.fotoUrl.startsWith('/') ? loja.fotoUrl : '/uploads/' + loja.fotoUrl) : '/imagens/Logo.png'}"
+                             th:alt="${loja.nome}"
+                             onerror="this.onerror=null; this.src='/imagens/Logo.png'">
+                    </div>
+                    <div class="loja-info">
+                        <h3 th:text="${loja.nome}">Nome da Loja</h3>
+                        <p class="loja-descricao" th:text="${#strings.abbreviate(loja.descricao, 100)}">
+                            Descrição da loja...
+                        </p>
+                        <div class="loja-meta">
+                            <div class="loja-rating">
+                                <i class="fas fa-star"></i>
+                                <span th:text="${loja.avaliacaoMedia != null ? loja.avaliacaoMedia : '5.0'}">5.0</span>
+                            </div>
+                            <div class="loja-location" th:if="${loja.lojaCidade != null}">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span th:text="${loja.lojaCidade + ', ' + loja.lojaEstado}">Cidade, UF</span>
+                            </div>
+                        </div>
+                        <div class="loja-badge" th:if="${loja.categoria != null}">
+                            <i class="fas fa-tag"></i>
+                            <span th:text="${loja.categoria}">Categoria</span>
+                        </div>
+                    </div>
+                    <div class="loja-action">
+                        <span class="btn-ver-loja">
+                            <i class="fas fa-arrow-right"></i> Ver Loja
+                        </span>
+                    </div>
+                </a>
+            </div>
+
+            <div th:if="${#lists.isEmpty(lojas)}" class="empty-state">
+                <i class="fas fa-store-slash fa-4x"></i>
+                <h3>Nenhuma loja encontrada</h3>
+                <p th:if="${categoria != null}">Não encontramos lojas nesta categoria no momento.</p>
+                <p th:unless="${categoria != null}">Ainda não temos lojas cadastradas.</p>
+                <a th:href="@{/}" class="btn btn-primary">
+                    <i class="fas fa-home"></i> Voltar ao Início
+                </a>
+            </div>
         </div>
     </div>
 </main>
 
 <footer th:replace="~{rodape :: footer}"></footer>
 
-<script th:src="@{/scripts/global.js}"></script>
-<script th:src="@{/scripts/lojas.js}"></script>
+<script th:src="@{/scripts/main.js}"></script>
 </body>
 </html>
+

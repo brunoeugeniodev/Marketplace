@@ -104,10 +104,10 @@ document.addEventListener('DOMContentLoaded', function() {
         items.forEach(item => {
             const cartItemHTML = `
                 <div class="cart-item" data-item-id="${item.id}">
-                    <img src="${item.produtoFotoUrl || item.fotoUrl || '/imagens/placeholder.png'}"
+                    <img src="${item.produtoFotoUrl || item.fotoUrl || '/imagens/Logo.png'}"
                          alt="${item.produtoNome || item.nome || 'Produto'}"
                          class="cart-item-img"
-                         onerror="this.src='/imagens/placeholder.png'">
+                         onerror="this.onerror=null; this.src='/imagens/Logo.png'">
 
                     <div class="cart-item-info">
                         <h3>${item.produtoNome || item.nome || 'Produto Demo'}</h3>

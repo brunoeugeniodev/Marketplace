@@ -41,4 +41,7 @@ public interface LojaRepository extends JpaRepository<Loja, Long> {
 
     @Query("SELECT COUNT(l) > 0 FROM Loja l WHERE l.cnpj = :cnpj AND l.id != :id")
     boolean existsByCnpjAndIdNot(@Param("cnpj") String cnpj, @Param("id") Long id);
+
+    // Novo: busca por categoria (case-insensitive) apenas lojas ativas
+    List<Loja> findByCategoriaIgnoreCaseAndAtivoTrue(String categoria);
 }

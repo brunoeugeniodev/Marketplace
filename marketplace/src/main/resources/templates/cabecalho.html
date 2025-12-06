@@ -43,25 +43,28 @@
 
                 <!-- Estado do Login -->
                 <div class="auth-status" th:if="${usuarioLogado != null}">
-                    <!-- Usuário Logado -->
-                    <div class="user-dropdown">
-                        <button class="user-btn">
+                    <!-- Usuário Logado - Menu Simplificado SEM DROPDOWN -->
+                    <div class="user-menu-simple">
+                        <span class="user-greeting">
                             <i class="fas fa-user-circle"></i>
                             <span th:text="${usuarioLogado}"></span>
-                            <i class="fas fa-chevron-down"></i>
-                        </button>
-                        <div class="dropdown-menu">
-                            <a th:href="@{/minha-conta}"><i class="fas fa-user"></i> Minha Conta</a>
-                            <a th:href="@{/minha-loja}"><i class="fas fa-store"></i> Minha Loja</a>
-                            <div class="dropdown-divider"></div>
-                            <!-- Botão de logout corrigido -->
-                            <form th:action="@{/logout}" method="post" style="display: inline;" id="logout-form">
-                                <input type="hidden" th:name="${_csrf?.parameterName}" th:value="${_csrf?.token}"/>
-                                <button type="submit" class="logout-btn" style="background: none; border: none; color: inherit; cursor: pointer; padding: 0; font: inherit; width: 100%; text-align: left;">
-                                    <i class="fas fa-sign-out-alt"></i> Sair
-                                </button>
-                            </form>
-                        </div>
+                        </span>
+                        <a th:href="@{/minha-conta}" class="user-link" title="Minha Conta">
+                            <i class="fas fa-user"></i>
+                            <span class="link-text">Conta</span>
+                        </a>
+                        <a th:href="@{/minha-loja}" class="user-link" title="Minha Loja">
+                            <i class="fas fa-store"></i>
+                            <span class="link-text">Loja</span>
+                        </a>
+                        <!-- Botão de logout simples -->
+                        <form th:action="@{/logout}" method="post" style="display: inline-block; margin: 0;">
+                            <input type="hidden" th:name="${_csrf?.parameterName}" th:value="${_csrf?.token}"/>
+                            <button type="submit" class="user-link logout-btn-simple" title="Sair">
+                                <i class="fas fa-sign-out-alt"></i>
+                                <span class="link-text">Sair</span>
+                            </button>
+                        </form>
                     </div>
                 </div>
 
@@ -94,40 +97,6 @@
     </div>
 </header>
 
-<!-- Scripts -->
-<script th:src="@{/js/header.js}" defer></script>
-<script th:src="@{/js/main.js}" defer></script>
 
-<script>
-    // Script inline para garantir que o logout funcione
-    document.addEventListener('DOMContentLoaded', function() {
-        console.log('🚀 Header script carregado');
-
-        // Configuração do menu mobile
-        const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
-        const navMenu = document.getElementById('nav-menu');
-
-        if (mobileMenuBtn && navMenu) {
-            mobileMenuBtn.addEventListener('click', function() {
-                navMenu.classList.toggle('show');
-                const icon = this.querySelector('i');
-                if (icon) {
-                    icon.classList.toggle('fa-bars');
-                    icon.classList.toggle('fa-times');
-                }
-            });
-        }
-
-        // Adicionar evento de logout
-        const logoutBtn = document.querySelector('.logout-btn');
-        if (logoutBtn) {
-            logoutBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                console.log('🔐 Logout iniciado...');
-                document.getElementById('logout-form').submit();
-            });
-        }
-    });
-</script>
 </body>
 </html>

@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste Dropdown</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: linear-gradient(180deg, #ff8a65, #ff4db8, #1a73e8);
+            min-height: 100vh;
+        }
+
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+        }
+
+        h1 {
+            margin-bottom: 30px;
+        }
+
+        .user-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .user-menu-btn {
+            background: rgba(26, 115, 232, 0.15);
+            border: 1px solid rgba(26, 115, 232, 0.3);
+            color: #1a73e8;
+            padding: 10px 16px;
+            border-radius: 25px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .user-menu-btn:hover {
+            background: rgba(26, 115, 232, 0.25);
+            border-color: rgba(26, 115, 232, 0.5);
+            transform: translateY(-1px);
+        }
+
+        .user-dropdown-content {
+            position: absolute;
+            top: calc(100% + 10px);
+            right: 0;
+            background: white;
+            min-width: 200px;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+            z-index: 9999;
+            display: none;
+        }
+
+        .user-dropdown-content.show {
+            display: block;
+            animation: dropdown-fade-in 0.2s ease-out;
+        }
+
+        @keyframes dropdown-fade-in {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .user-dropdown-content a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #333;
+            text-decoration: none;
+            padding: 14px 18px;
+            transition: background 0.2s ease;
+            font-size: 14px;
+        }
+
+        .user-dropdown-content a:hover {
+            background: #f5f5f5;
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background-color: #e0e0e0;
+            margin: 4px 0;
+        }
+
+        .status {
+            margin-top: 20px;
+            padding: 15px;
+            background: #e3f2fd;
+            border-radius: 5px;
+            border-left: 4px solid #1a73e8;
+        }
+
+        .log {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f5f5f5;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .log-entry {
+            margin: 5px 0;
+            padding: 5px;
+            background: white;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🧪 Teste de Dropdown do Usuário</h1>
+
+        <p>Clique no botão abaixo para testar o dropdown:</p>
+
+        <div class="user-dropdown">
+            <button type="button" class="user-menu-btn" id="testBtn">
+                <i class="fas fa-user-circle"></i>
+                <span>usuario@exemplo.com</span>
+                <i class="fas fa-chevron-down"></i>
+            </button>
+            <div class="user-dropdown-content" id="testDropdown">
+                <a href="#"><i class="fas fa-user"></i> Minha Conta</a>
+                <a href="#"><i class="fas fa-store"></i> Minha Loja</a>
+                <div class="dropdown-divider"></div>
+                <a href="#"><i class="fas fa-sign-out-alt"></i> Sair</a>
+            </div>
+        </div>
+
+        <div class="status" id="status">
+            Status: <strong id="statusText">Dropdown fechado</strong>
+        </div>
+
+        <div class="log" id="log">
+            <strong>Log de eventos:</strong>
+            <div id="logEntries"></div>
+        </div>
+    </div>
+
+    <script>
+        const testBtn = document.getElementById('testBtn');
+        const testDropdown = document.getElementById('testDropdown');
+        const statusText = document.getElementById('statusText');
+        const logEntries = document.getElementById('logEntries');
+
+        function addLog(message) {
+            const entry = document.createElement('div');
+            entry.className = 'log-entry';
+            const time = new Date().toLocaleTimeString();
+            entry.textContent = `[${time}] ${message}`;
+            logEntries.insertBefore(entry, logEntries.firstChild);
+        }
+
+        addLog('✅ Script carregado');
+
+        testBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            addLog('🖱️ Clique no botão detectado');
+
+            testDropdown.classList.toggle('show');
+
+            const isOpen = testDropdown.classList.contains('show');
+            statusText.textContent = isOpen ? 'Dropdown ABERTO' : 'Dropdown FECHADO';
+            statusText.style.color = isOpen ? 'green' : 'red';
+
+            addLog(`✅ Dropdown agora está: ${isOpen ? 'ABERTO' : 'FECHADO'}`);
+        });
+
+        testDropdown.addEventListener('click', function(e) {
+            if (e.target.tagName === 'A') {
+                e.preventDefault();
+                addLog(`🔗 Link clicado: ${e.target.textContent}`);
+                return;
+            }
+            e.stopPropagation();
+        });
+
+        document.addEventListener('click', function(e) {
+            if (!testBtn.contains(e.target) && !testDropdown.contains(e.target)) {
+                if (testDropdown.classList.contains('show')) {
+                    addLog('🖱️ Clique fora - fechando dropdown');
+                    testDropdown.classList.remove('show');
+                    statusText.textContent = 'Dropdown FECHADO';
+                    statusText.style.color = 'red';
+                }
+            }
+        });
+
+        addLog('✅ Event listeners configurados');
+    </script>
+</body>
+</html>
+

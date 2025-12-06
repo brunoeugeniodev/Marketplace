@@ -43,148 +43,86 @@ document.addEventListener('DOMContentLoaded', function() {
         return false;
     };
 
-    // ========== ENCONTRAR E CONFIGURAR LINKS DE LOGOUT AUTOMATICAMENTE ==========
-    console.log('🔍 Procurando links de logout...');
+    // NOTA: Links de logout agora são gerenciados por header.js
+    // Removido código que causava conflito com o dropdown do usuário
 
-    // Encontrar todos os possíveis links de logout
-    const logoutSelectors = [
-        'a[onclick*="logout"]',
-        'a[href*="logout"]',
-        '.logout-link',
-        'a:has(i.fa-sign-out-alt)',
-        '#logout-link',
-        '.logout-btn'
-    ];
-
-    let logoutLinks = [];
-    logoutSelectors.forEach(selector => {
-        const links = document.querySelectorAll(selector);
-        links.forEach(link => logoutLinks.push(link));
-    });
-
-    // Remover duplicados
-    logoutLinks = [...new Set(logoutLinks)];
-
-    console.log(`✅ ${logoutLinks.length} link(s) de logout encontrado(s)`);
-
-    // Configurar cada link
-    logoutLinks.forEach((link, index) => {
-        console.log(`🔗 Configurando link ${index + 1}:`, link.tagName, link.className);
-
-        // Remover qualquer onclick existente
-        if (link.hasAttribute('onclick')) {
-            link.removeAttribute('onclick');
-        }
-
-        // Remover href="#" para evitar o problema
-        if (link.getAttribute('href') === '#') {
-            link.setAttribute('href', 'javascript:void(0);');
-        }
-
-        // Adicionar event listener - usar captura para garantir que funcione
-        link.addEventListener('click', function(e) {
-            console.log('🎯 Click no link de logout detectado');
-            console.log('Target:', e.target);
-            console.log('Current Target:', e.currentTarget);
-            window.logout(e);
-        }, true); // true = usa captura phase
-
-        // Adicionar estilo para cursor pointer se não tiver
-        if (!link.style.cursor) {
-            link.style.cursor = 'pointer';
-        }
-    });
-
-    // ========== MENU MOBILE ==========
-    const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
-    const navMenu = document.getElementById('nav-menu');
-
-    if (mobileMenuBtn && navMenu) {
-        mobileMenuBtn.addEventListener('click', function() {
-            navMenu.classList.toggle('show');
-            const icon = this.querySelector('i');
-            if (icon) {
-                icon.classList.toggle('fa-bars');
-                icon.classList.toggle('fa-times');
-            }
-        });
-    }
-
-    // ========== DROPDOWN DO USUÁRIO ==========
-    const userBtns = document.querySelectorAll('.user-btn');
-    userBtns.forEach(btn => {
-        btn.addEventListener('click', function(e) {
-            e.stopPropagation();
-            const dropdown = this.parentElement.querySelector('.dropdown-menu');
-            if (dropdown) {
-                dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
-            }
-        });
-    });
-
-    // Fechar dropdown ao clicar fora
-    document.addEventListener('click', function() {
-        const dropdowns = document.querySelectorAll('.dropdown-menu');
-        dropdowns.forEach(dropdown => {
-            dropdown.style.display = 'none';
-        });
-    });
+    // NOTA: Menu mobile agora é gerenciado por header.js
+    // NOTA: O dropdown do usuário agora é gerenciado por header.js
 
     // ========== FUNÇÃO GLOBAL PARA NOTIFICAÇÕES ==========
     window.showNotification = function(message, type = 'success') {
+        // Remover notificação anterior se existir
+        const oldNotification = document.querySelector('.notification');
+        if (oldNotification) {
+            oldNotification.remove();
+        }
+
+        // Criar elemento de notificação
         const notification = document.createElement('div');
         notification.className = `notification notification-${type}`;
         notification.innerHTML = `
-            <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
-            <span>${message}</span>
-            <button class="close-notification">&times;</button>
+            <span class="notification-message">${message}</span>
+            <button class="notification-close" onclick="this.parentElement.remove()">
+                <i class="fas fa-times"></i>
+            </button>
         `;
 
+        // Adicionar estilos inline se não existirem no CSS
         notification.style.cssText = `
             position: fixed;
             top: 20px;
             right: 20px;
             padding: 15px 20px;
             border-radius: 5px;
-            z-index: 9999;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            z-index: 10000;
             display: flex;
             align-items: center;
             gap: 10px;
-            min-width: 300px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            animation: slideIn 0.3s ease;
-            background: ${type === 'success' ? '#d4edda' : type === 'error' ? '#f8d7da' : '#d1ecf1'};
-            color: ${type === 'success' ? '#155724' : type === 'error' ? '#721c24' : '#0c5460'};
-            border: 1px solid ${type === 'success' ? '#c3e6cb' : type === 'error' ? '#f5c6cb' : '#bee5eb'};
+            animation: slideIn 0.3s ease-out;
+            max-width: 400px;
+            background: ${type === 'success' ? '#4CAF50' : type === 'error' ? '#f44336' : '#2196F3'};
+            color: white;
         `;
 
         document.body.appendChild(notification);
 
-        // Adicionar animação CSS
-        if (!document.querySelector('#notification-styles')) {
-            const style = document.createElement('style');
-            style.id = 'notification-styles';
-            style.textContent = `
-                @keyframes slideIn {
-                    from { transform: translateX(100%); opacity: 0; }
-                    to { transform: translateX(0); opacity: 1; }
-                }
-            `;
-            document.head.appendChild(style);
+        // Remover após 3 segundos
+        setTimeout(() => {
+            notification.style.animation = 'slideOut 0.3s ease-out';
+            setTimeout(() => notification.remove(), 300);
+        }, 3000);
+    };
+
+    // ========== FUNÇÃO GLOBAL PARA ATUALIZAR CONTADOR DO CARRINHO ==========
+    window.atualizarContadorCarrinho = function(carrinhoData) {
+        const cartCount = document.getElementById('cart-count');
+        if (!cartCount) {
+            console.warn('⚠️ Elemento cart-count não encontrado');
+            return;
         }
 
-        // Fechar notificação
-        notification.querySelector('.close-notification').addEventListener('click', () => {
-            notification.remove();
-        });
+        let totalItens = 0;
 
-        // Remover automaticamente após 5 segundos
-        setTimeout(() => {
-            if (notification.parentElement) {
-                notification.remove();
-            }
-        }, 5000);
+        if (carrinhoData && carrinhoData.itens && Array.isArray(carrinhoData.itens)) {
+            // Somar as quantidades de todos os itens
+            totalItens = carrinhoData.itens.reduce((total, item) => total + (item.quantidade || 0), 0);
+        }
+
+        console.log(`🛒 Atualizando contador do carrinho: ${totalItens} itens`);
+
+        cartCount.textContent = totalItens;
+
+        // Mostrar/ocultar o badge
+        if (totalItens > 0) {
+            cartCount.style.display = 'inline-block';
+            cartCount.classList.add('show');
+        } else {
+            cartCount.style.display = 'none';
+            cartCount.classList.remove('show');
+        }
     };
+
 
     // ========== FUNÇÕES ADICIONAIS PARA O SITE ==========
 

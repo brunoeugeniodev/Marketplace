@@ -1,0 +1,22 @@
+#!/bin/bash
+
+echo "🔴 PARANDO O SPRING BOOT..."
+echo ""
+echo "⚠️ INSTRUÇÕES:"
+echo "1. Vá no terminal onde o Spring Boot está rodando"
+echo "2. Pressione: Ctrl + C"
+echo "3. Aguarde ele parar completamente"
+echo "4. Execute este comando:"
+echo ""
+echo "   cd /home/Michino/Documents/Projects/NaLojaTem-main/marketplace"
+echo "   ./mvnw spring-boot:run"
+echo ""
+echo "5. Aguarde a mensagem: 'Started MarketplaceApplication'"
+echo "6. Depois, no navegador:"
+echo "   - Ctrl + F5 (hard reload)"
+echo "   - F12 (abrir console)"
+echo "   - Procure por: 🔥🔥🔥 SCRIPT INLINE DO DROPDOWN CARREGADO"
+echo ""
+echo "✅ Se você ver essa mensagem, CLIQUE NO BOTÃO DO DROPDOWN!"
+echo ""
+

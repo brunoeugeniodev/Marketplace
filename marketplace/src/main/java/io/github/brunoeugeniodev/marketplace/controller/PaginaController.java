@@ -349,4 +349,19 @@ public class PaginaController {
         addLoginStatus(model);
         return "carrinho";
     }
+
+    @GetMapping("/lojas")
+    public String listarLojas(@RequestParam(required = false) String categoria, Model model) {
+        List<Loja> lojas;
+        if (categoria != null && !categoria.trim().isEmpty()) {
+            lojas = lojaService.listarPorCategoria(categoria);
+        } else {
+            lojas = lojaService.listarLojasAtivas();
+        }
+
+        model.addAttribute("lojas", lojas);
+        addLoginStatus(model);
+        return "lojas";
+    }
 }
+
